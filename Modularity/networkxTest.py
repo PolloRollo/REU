@@ -54,7 +54,7 @@ def createGraph(n, p):
     return G
 
 
-def randomWalkUntilCycle(G):
+def randomWalkUntilCycle(G, cycle=False):
     """
     Beginning with input graph G, we choose a random edge in G.
     Since G is undirected, we randomly decide a head and tail for the edge.
@@ -83,16 +83,25 @@ def randomWalkUntilCycle(G):
             return None
         path.append(head)
         head, tail = random.choice(neighbors), head
-    start = path.index(head)
-    cycle = path[start:]
-    return cycle
+    if cycle:
+        start = path.index(head)
+        cycle = path[start:]
+        return cycle
+    else:
+        return [path[-1], head]
 
 
 def RNBRW(G, n):
     for _ in range(n):
-        cycle = randomWalkUntilCycle(G)
+        renewal = randomWalkUntilCycle(G)
+        if renewal is not None:
+            G[renewal[0]][renewal[1]]['rnbrw_weight'] += 1
+
+
+def CNBRW(G, n):
+    for _ in range(n):
+        cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
-            G[cycle[0]][cycle[-1]]['rnbrw_weight'] += 1
             for i in range(len(cycle)):
                 G[cycle[i]][cycle[i-1]]['cycle_rnbrw'] += 1
 

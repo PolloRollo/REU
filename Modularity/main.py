@@ -12,8 +12,8 @@ def main(n):
     # Create community graph
     G = communityBuilder(n, 5, .7, .2)
 
-    # RNBRW(G, len(G.edges))
-    RNBRW(G, floor(n))
+    RNBRW(G, len(G.edges))
+    CNBRW(G, floor(n * log(n)))
     print("rnbrw", nx.algorithms.community.louvain_communities(G, 'rnbrw_weight', 1))
     print("cycle", nx.algorithms.community.louvain_communities(G, 'cycle_rnbrw', 1))
 
@@ -25,7 +25,6 @@ def main(n):
     # plt.show()
 
 
-main(500)
+main(50)
 
-# main()
 
