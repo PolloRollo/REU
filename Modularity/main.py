@@ -1,59 +1,31 @@
-""""
-
+"""
 
 
 
 """
 
-import random
-import networkx
+from networkxTest import *
+from graphData import *
 
 
-def createNetwork(n, p):
-    network = [[0 for _ in range(n)] for __ in range(n)]
-    for i in range(n):
-        for j in range(i+1, n):
-            if random.random() < p:
-                network[i][j] = 1
-                network[j][i] = 1
-    return network
+def main(n):
+    # Create community graph
+    G = communityBuilder(n, 5, .7, .2)
+
+    # RNBRW(G, len(G.edges))
+    RNBRW(G, floor(n))
+    print("rnbrw", nx.algorithms.community.louvain_communities(G, 'rnbrw_weight', 1))
+    print("cycle", nx.algorithms.community.louvain_communities(G, 'cycle_rnbrw', 1))
+
+    # rnbrw = [edge for edge in G.edges() if G[edge[0]][edge[1]]['rnbrw_weight'] > 0]
+    # rnbrw = [edge for edge in G.edges() if G[edge[0]][edge[1]]['cycle_rnbrw'] > 1]
+    # nx.draw(G, pos=nx.circular_layout(G))
+    # nx.draw_networkx_nodes(G, pos=nx.circular_layout(G))
+    # nx.draw_networkx_edges(G, pos=nx.circular_layout(G), edgelist=rnbrw, edge_color='r')
+    # plt.show()
 
 
-def degreeCount(network):
-    return [sum(node) for node in network]
-
-
-# Designed to measure the "connective-ness" of a network
-# Meant to be optimized for community detection
-def modularityFunction(network):
-    d = degreeCount(network)
-    m = sum(d)
-    modularity = 0
-    n = len(network)
-    for i in range(n):
-        for j in range(n):
-            modularity = network[i][j] - (d[i] * d[j] / m) * (1)  # Change to community Dirac delta
-    modularity /= m
-    print(modularity)
-
-
-def graphDictionary(adjacency):
-    graphDict = {}
-    for i in range(len(adjacency)):
-        graphDict[i] = []
-        for j in range(len(adjacency[i])):
-            if adjacency[i][j] > 0:
-                graphDict[i].append(j)
-    return graphDict
-
-
-def main():
-    network = createNetwork(10, .5)
-    graph = graphDictionary(network)
-    for i, j in graph.items():
-        print(i, j)
-    modularityFunction(network)
-
+main(500)
 
 # main()
 
