@@ -66,25 +66,25 @@ def randomWalkUntilCycle(G):
     """
     x, y = random.choice(list(G.edges))
     head, tail = None, None
-    previousNodes = []
+    path = []
     if random.random() > .5:
         head = x
         tail = y
-        previousNodes = [tail]
+        path = [tail]
     else:
         head = y
         tail = x
-        previousNodes = [tail]
-    while head not in previousNodes:
+        path = [tail]
+    while head not in path:
         neighbors = list(G[head])
         neighbors.remove(tail)
         if len(neighbors) == 0:
             print("Dead end")
             return None
-        previousNodes.append(head)
+        path.append(head)
         head, tail = random.choice(neighbors), head
-    start = previousNodes.index(head)
-    cycle = previousNodes[start:]
+    start = path.index(head)
+    cycle = path[start:]
     return cycle
 
 
