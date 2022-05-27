@@ -61,6 +61,8 @@ def randomWalkUntilCycle(G, cycle=False):
     We then randomly walk, without backtracking until we revisit a node
     OR we visit a node with no edges (besides backtracking).
 
+    The cycle parameter determines whether we use RNBRW (False) or David Rollo's cycle method
+
     We return the cycle where the retracing edge connects [0] and [-1]
     -Bad coding practice to adjust the graph in this function?
     """
@@ -75,14 +77,17 @@ def randomWalkUntilCycle(G, cycle=False):
         head = y
         tail = x
         path = [tail]
+    # Random walk until cycle
     while head not in path:
         neighbors = list(G[head])
         neighbors.remove(tail)
+        if head in neighbors:
+            neighbors.remove(head)
         if len(neighbors) == 0:
-            print("Dead end")
             return None
         path.append(head)
         head, tail = random.choice(neighbors), head
+
     if cycle:
         start = path.index(head)
         cycle = path[start:]
@@ -95,7 +100,9 @@ def RNBRW(G, n):
     for _ in range(n):
         renewal = randomWalkUntilCycle(G)
         if renewal is not None:
-            G[renewal[0]][renewal[1]]['rnbrw_weight'] += 1
+            G[renewal[0]][renewal[1]]['rnbrw'] += 1
+        else:
+            _ -= 1
 
 
 def CNBRW(G, n):
@@ -103,7 +110,10 @@ def CNBRW(G, n):
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
             for i in range(len(cycle)):
-                G[cycle[i]][cycle[i-1]]['cycle_rnbrw'] += 1
+                G[cycle[i]][cycle[i-1]]['cycle'] += 1
+        else:
+            _ -= 1
+
 
 
 def communityBuilder(nodes, group_count, p_in, p_out):
@@ -119,16 +129,18 @@ def communityBuilder(nodes, group_count, p_in, p_out):
         for node in range(len(groupNodes)):
             for edge in range(node+1, len(groupNodes)):
                 if random.random() < p_in:
-                    G.add_edge(groupNodes[node], groupNodes[edge], rnbrw_weight=0, cycle_rnbrw=0)
+                    G.add_edge(groupNodes[node], groupNodes[edge], rnbrw=0, cycle=0)
     # Add connections between groups
     for i in range(len(groups)):
         for j in range(i + 1, len(groups)):
             for edge in range(floor(len(groups[i]) * len(groups[j]) * p_out)):
-                G.add_edge(random.choice(groups[i]), random.choice(groups[j]), rnbrw_weight=0, cycle_rnbrw=0)
+                G.add_edge(random.choice(groups[i]), random.choice(groups[j]), rnbrw=0, cycle=0)
     return G
 
 
-def LFRBenchmark(n, tau1, tau2, mu, average_degree, min_degree, max_degree, min_community, max_community, tol, iters):
+def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
+                 min_degree=None, max_degree=None, min_community=None,
+                 max_community=None,tol=.25, iters=500):
     """
     Benchmark test to determine how well an algorithm is at community detection.
 
@@ -146,9 +158,23 @@ def LFRBenchmark(n, tau1, tau2, mu, average_degree, min_degree, max_degree, min_
         max_iters: int - Maximum number of iterations to try to create the community sizes, degree distribution, and community affiliations.
 
     Returns networkx graph object
-        """
-    return nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
+    """
+    if average_degree is None and min_degree is None:
+        average_degree = 2*log(n)
+    if max_degree is None:
+        max_degree = n
+    if min_community is None:
+        min_community = log(n)*average_degree
+    if max_community is None:
+        max_community = n
+
+    G = nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
                     min_degree, max_degree, min_community, max_community, tol, iters)
+
+    G.remove_edges_from(nx.selfloop_edges(G))
+    nx.set_edge_attributes(G, values=0, name='rnbrw')
+    nx.set_edge_attributes(G, values=0, name='cycle')
+    return G
 
 # testAdjacency()
 # testDictionary()
