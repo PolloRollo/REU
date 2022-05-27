@@ -128,6 +128,28 @@ def communityBuilder(nodes, group_count, p_in, p_out):
     return G
 
 
+def LFRBenchmark(n, tau1, tau2, mu, average_degree, min_degree, max_degree, min_community, max_community, tol, iters):
+    """
+    Benchmark test to determine how well an algorithm is at community detection.
+
+    Parameters
+        n:      int - Number of nodes in the created graph.
+        tau1:   float - Power law exponent for the degree distribution of the created graph. This value must be strictly greater than one.
+        tau2:   float - Power law exponent for the community size distribution in the created graph. This value must be strictly greater than one.
+        mu:     float - Fraction of inter-community edges incident to each node. This value must be in the interval [0, 1].
+        average_degree: float - Desired average degree of nodes in the created graph. This value must be in the interval [0, n]. Exactly one of this and min_degree must be specified, otherwise a NetworkXError is raised.
+        min_degree: int - Minimum degree of nodes in the created graph. This value must be in the interval [0, n]. Exactly one of this and average_degree must be specified, otherwise a NetworkXError is raised.
+        max_degree: int - Maximum degree of nodes in the created graph. If not specified, this is set to n, the total number of nodes in the graph.
+        min_community: int - Minimum size of communities in the graph. If not specified, this is set to min_degree.
+        max_community: int - Maximum size of communities in the graph. If not specified, this is set to n, the total number of nodes in the graph.
+        tol:    float - Tolerance when comparing floats, specifically when comparing average degree values.
+        max_iters: int - Maximum number of iterations to try to create the community sizes, degree distribution, and community affiliations.
+
+    Returns networkx graph object
+        """
+    return nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
+                    min_degree, max_degree, min_community, max_community, tol, iters)
+
 # testAdjacency()
 # testDictionary()
 
