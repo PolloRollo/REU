@@ -32,3 +32,28 @@ average cycle length
 
 
 CYCLE METHOD OUTPERFORMS RNBRW (at least for small intergroup interaction)
+
+2000
+true group count 11
+construction time 0.21807599067687988
+number of groups 19
+RNBRW time 82.61236190795898
+number of groups 10
+Cycle time 66.7047472000122
+4000
+true group count 15
+construction time 0.30846285820007324
+number of groups 19
+RNBRW time 357.0079252719879
+number of groups 14
+Cycle time 300.9403340816498
+8000
+true group count 23
+construction time 0.9289278984069824
+number of groups 31
+RNBRW time 2056.4077339172363
+number of groups 22
+Cycle time 1859.673350095749
+
+
+
