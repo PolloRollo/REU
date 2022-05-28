@@ -7,8 +7,8 @@ import networkx as nx
 import random
 from math import floor
 from math import log
-from graphData import createNetwork as createAdjacency
-from graphData import graphDictionary as adjacencyToDict
+from graphData import createAdjacency
+from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
 
 
@@ -69,6 +69,7 @@ def randomWalkUntilCycle(G, cycle=False):
     x, y = random.choice(list(G.edges))
     head, tail = None, None
     path = []
+    # choose a direction
     if random.random() > .5:
         head = x
         tail = y
@@ -140,7 +141,7 @@ def communityBuilder(nodes, group_count, p_in, p_out):
 
 def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
                  min_degree=None, max_degree=None, min_community=None,
-                 max_community=None,tol=.25, iters=500):
+                 max_community=None, tol=.5, max_iters=2000):
     """
     Benchmark test to determine how well an algorithm is at community detection.
 
@@ -169,7 +170,7 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
         max_community = n
 
     G = nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
-                    min_degree, max_degree, min_community, max_community, tol, iters)
+                    min_degree, max_degree, min_community, max_community, tol, max_iters)
 
     G.remove_edges_from(nx.selfloop_edges(G))
     nx.set_edge_attributes(G, values=0, name='rnbrw')

@@ -6,11 +6,9 @@
 """
 
 import random
-import networkx
-import networkxTest
 
 
-def createNetwork(n, p):
+def createAdjacency(n, p):
     network = [[0 for _ in range(n)] for __ in range(n)]
     for i in range(n):
         for j in range(i+1, n):
@@ -38,7 +36,7 @@ def modularityFunction(network):
     print(modularity)
 
 
-def graphDictionary(adjacency):
+def adjacencyToDict(adjacency):
     graphDict = {}
     for i in range(len(adjacency)):
         graphDict[i] = []
@@ -49,8 +47,8 @@ def graphDictionary(adjacency):
 
 
 def main():
-    network = createNetwork(10, .5)
-    graph = graphDictionary(network)
+    network = createAdjacency(10, .5)
+    graph = adjacencyToDict(network)
     for i, j in graph.items():
         print(i, j)
     modularityFunction(network)
