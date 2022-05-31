@@ -31,7 +31,7 @@ def modularityFunction(network):
     n = len(network)
     for i in range(n):
         for j in range(n):
-            modularity = network[i][j] - (d[i] * d[j] / m) * (1)  # Change to community Dirac delta
+            modularity += network[i][j] - (d[i] * d[j] / m) * (1)  # Change to community Dirac delta
     modularity /= m
     print(modularity)
 
@@ -52,3 +52,6 @@ def main():
     for i, j in graph.items():
         print(i, j)
     modularityFunction(network)
+
+
+# main()

@@ -13,7 +13,7 @@ def main(n, group_count=25, draw=False):
     # Create community graph
     print(n)
     start = time()
-    #G = communityBuilder(n, group_count, p_in=.7, p_out=.2)
+    # G = communityBuilder(n, group_count, p_in=.7, p_out=.2)
     G = LFRBenchmark(n)
     # IDENTIFY PRE-BUILT COMMUNITIES
 
@@ -26,46 +26,58 @@ def main(n, group_count=25, draw=False):
             communityCount += 1
             communityList.append(G.nodes[node]['community'])
             # print(G.nodes[node]['community'])
-
+    modValLFR = modularity(G, communityList)
     print("true group count", communityCount)
-    # print("true group count", group_count)
     print("construction time", time() - start)
+    print(modValLFR)
 
     # CLASSIFY COMMUNITIES
     start = time()
     RNBRW(G, len(G.edges))
     rnbrw = nx.algorithms.community.louvain_communities(G, 'rnbrw', 1)
     # print("rnbrw", rnbrw)
+    modValRnbrw = modularity(G, rnbrw)
+
     print("number of groups", len(rnbrw))
     print("RNBRW time m", time() - start)
+    print(modValRnbrw)
 
     start = time()
     CNBRW(G, n)
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
     # print("cycle", cycle)
+    modValCycle = modularity(G, cycle)
+
     print("number of groups", len(cycle))
     print("Cycle time n", time() - start)
+    print(modValCycle)
 
     start = time()
     CNBRW(G, 2 * n)
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
     # print("cycle", cycle)
+    modValCycle = modularity(G, cycle)
     print("number of groups", len(cycle))
     print("Cycle time 2n", time() - start)
+    print(modValCycle)
 
     start = time()
     CNBRW(G, floor(n * log(n)))
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
     # print("cycle", cycle)
+    modValCycle = modularity(G, cycle)
     print("number of groups", len(cycle))
     print("Cycle time nlogn", time() - start)
+    print(modValCycle)
 
     start = time()
     CNBRW(G, len(G.edges))
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
     # print("cycle", cycle)
+    modValCycle = modularity(G, cycle)
     print("number of groups", len(cycle))
     print("Cycle time m", time() - start)
+    print(modValCycle)
 
     if draw:
         rnbrw = [edge for edge in G.edges() if G[edge[0]][edge[1]]['rnbrw'] > 0]
@@ -168,8 +180,8 @@ def weightedCyclestudy(n):
 
 
 for i in range(10):
-    # main(100 * 2**i)
+    main(100 * 2**i)
     # mainCycleStudy(100 * 2**i)
     # weightedCyclestudy(100 * 2**i)
-    mainRetraceStudy(100 * 2**i)
+    # mainRetraceStudy(100 * 2**i)
 

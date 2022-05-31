@@ -247,6 +247,22 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
     nx.set_edge_attributes(G, values=0, name='random')
     return G
 
+
+def modularity(G, communities):
+    m = 2 * len(G.edges)
+    modularityVal = 0
+    n = len(G.nodes)
+    for group in communities:
+        for i in group:
+            for j in range(n):
+                A = 0
+                if j in G.adj[i]:
+                    A = 1
+                if j in group:  # Dirac delta
+                    modularityVal += A - (len(G[i]) * len(G[j]) / (m-1))
+    modularityVal /= m
+    return modularityVal
+
 # testAdjacency()
 # testDictionary()
 
