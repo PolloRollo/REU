@@ -108,12 +108,13 @@ def randomWalkUntilCycle(G, cycle=False):
 
 def RNBRW(G, n):
     # update the graph edge attributes for each retraced edge found
-    for _ in range(n):
+    i = 0
+    nx.set_edge_attributes(G, values=0, name='rnbrw')
+    while i < n:
         retrace = randomWalkUntilCycle(G)
         if retrace is not None:
             G[retrace[0]][retrace[1]]['rnbrw'] += 1
-        else:
-            _ -= 1
+            i += 1
 
 
 def CNBRW(G, n):
