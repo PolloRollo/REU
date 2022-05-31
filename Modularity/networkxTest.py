@@ -116,6 +116,75 @@ def CNBRW(G, n):
             _ -= 1
 
 
+def weightedCNBRW(G, n):
+    for _ in range(n):
+        cycle = randomWalkUntilCycle(G, cycle=True)
+        if cycle is not None:
+            for i in range(len(cycle)):
+                G[cycle[i]][cycle[i-1]]['cycle'] += 1/len(cycle)
+        else:
+            _ -= 1
+
+
+def cycleStudy(G, n):
+    inGroupCycleLength = {}
+    outGroupCycleLength = {}
+    inGroupCount = 0
+    outGroupCount = 0
+    for _ in range(n):
+        cycle = randomWalkUntilCycle(G, cycle=True)
+        group = G.nodes[cycle[0]]['community']
+        # print(group)
+        inGroup = True
+        for node in cycle:
+            if node not in group:
+                # print(node)
+                inGroup = False
+                outGroupCount += 1
+                if len(cycle) in outGroupCycleLength:
+                    outGroupCycleLength[len(cycle)] += 1
+                else:
+                    outGroupCycleLength[len(cycle)] = 1
+                break
+        if inGroup:
+            inGroupCount += 1
+            if len(cycle) in inGroupCycleLength:
+                inGroupCycleLength[len(cycle)] += 1
+            else:
+                inGroupCycleLength[len(cycle)] = 1
+    print("inGroupCount", inGroupCount)
+    print("outGroupCount", outGroupCount)
+    return [inGroupCycleLength, outGroupCycleLength]
+
+
+def retraceStudy(G, n):
+    inGroupCount = 0
+    outGroupCount = 0
+    for _ in range(n):
+        renewal = randomWalkUntilCycle(G)
+        if G.nodes[renewal[0]] == G.nodes[renewal[1]]:
+            inGroupCount += 1
+        else:
+            outGroupCount += 1
+    print("inGroupCount", inGroupCount)
+    print("outGroupCount", outGroupCount)
+    return [inGroupCount, outGroupCount]
+
+
+def randomEdge(G, n):
+    inGroupCount = 0
+    outGroupCount = 0
+    for _ in range(n):
+        a, b = random.choice(list(G.edges))
+        G[a][b]['random'] += 1
+        if G.nodes[a] == G.nodes[b]:
+            inGroupCount += 1
+        else:
+            outGroupCount += 1
+    # print("inGroupCount", inGroupCount)
+    # print("outGroupCount", outGroupCount)
+    return [inGroupCount, outGroupCount]
+
 
 def communityBuilder(nodes, group_count, p_in, p_out):
     G = nx.Graph()
@@ -175,6 +244,7 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
     G.remove_edges_from(nx.selfloop_edges(G))
     nx.set_edge_attributes(G, values=0, name='rnbrw')
     nx.set_edge_attributes(G, values=0, name='cycle')
+    nx.set_edge_attributes(G, values=0, name='random')
     return G
 
 # testAdjacency()

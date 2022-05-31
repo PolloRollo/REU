@@ -76,7 +76,100 @@ def main(n, group_count=25, draw=False):
         plt.show()
 
 
-for i in range(10):
-    main(100 * 2**i)
+def mainRetraceStudy(n):
+    print(n)
+    start = time()
+    G = LFRBenchmark(n)
+    # IDENTIFY PRE-BUILT COMMUNITIES
 
+    communityCount = 0
+    communities = set()
+    communityList = []
+    for node in G.nodes:
+        if node not in communities:
+            communities |= G.nodes[node]['community']
+            communityCount += 1
+            communityList.append(G.nodes[node]['community'])
+            # print(G.nodes[node]['community'])
+
+    print("true group count", communityCount)
+    # print("true group count", group_count)
+    print("construction time", time() - start)
+
+    # CLASSIFY COMMUNITIES
+    start = time()
+    randomEdge(G, len(G.edges))
+    cycle = nx.algorithms.community.louvain_communities(G, 'random', 1)
+    # print("cycle", cycle)
+    print("number of groups", len(cycle))
+    print("Control time m", time() - start)
+
+
+    # CLASSIFY COMMUNITIES
+    start = time()
+    RNBRW(G, len(G.edges))
+    cycle = nx.algorithms.community.louvain_communities(G, 'rnbrw', 1)
+    # print("cycle", cycle)
+    print("number of groups", len(cycle))
+    print("RNBRW time m", time() - start)
+
+
+def mainCycleStudy(n):
+    G = LFRBenchmark(n)
+    cycleData = cycleStudy(G, 1000)
+    print(cycleData)
+
+
+
+
+def weightedCyclestudy(n):
+    # Create community graph
+    print(n)
+    start = time()
+    #G = communityBuilder(n, group_count, p_in=.7, p_out=.2)
+    G = LFRBenchmark(n)
+    # IDENTIFY PRE-BUILT COMMUNITIES
+
+    communityCount = 0
+    communities = set()
+    communityList = []
+    for node in G.nodes:
+        if node not in communities:
+            communities |= G.nodes[node]['community']
+            communityCount += 1
+            communityList.append(G.nodes[node]['community'])
+            # print(G.nodes[node]['community'])
+
+    print("true group count", communityCount)
+    # print("true group count", group_count)
+    print("construction time", time() - start)
+
+    # CLASSIFY COMMUNITIES
+    start = time()
+    randomEdge(G, n)
+    cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
+    # print("cycle", cycle)
+    print("number of groups", len(cycle))
+    print("Control time n", time() - start)
+
+    start = time()
+    CNBRW(G, n)
+    cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
+    # print("cycle", cycle)
+    print("number of groups", len(cycle))
+    print("Cycle time n", time() - start)
+
+    start = time()
+    weightedCNBRW(G, n)
+    cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
+    # print("cycle", cycle)
+    print("number of groups", len(cycle))
+    print("Weighted Cycle time n", time() - start)
+
+
+for i in range(10):
+    # main(100 * 2**i)
+    # mainCycleStudy(100 * 2**i)
+    # weightedCyclestudy(100 * 2**i)
+    mainRetraceStudy(100 * 2**i)
 

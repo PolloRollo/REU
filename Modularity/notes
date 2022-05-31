@@ -55,5 +55,143 @@ RNBRW time 2056.4077339172363
 number of groups 22
 Cycle time 1859.673350095749
 
+SECOND TEST
+
+100
+true group count 2
+construction time 0.18803143501281738
+number of groups 8
+RNBRW time m 0.07544088363647461
+number of groups 7
+Cycle time n 0.02081894874572754
+number of groups 7
+Cycle time nlogn 0.07011079788208008
+number of groups 6
+Cycle time m 0.07447409629821777
+200
+true group count 2
+construction time 0.012217044830322266
+number of groups 11
+RNBRW time m 0.37928295135498047
+number of groups 9
+Cycle time n 0.07563304901123047
+number of groups 9
+Cycle time nlogn 0.32072019577026367
+number of groups 8
+Cycle time m 0.39411091804504395
+400
+true group count 5
+construction time 0.02061009407043457
+number of groups 11
+RNBRW time m 1.8950209617614746
+number of groups 13
+Cycle time n 0.3117671012878418
+number of groups 11
+Cycle time nlogn 1.7050561904907227
+number of groups 9
+Cycle time m 1.9253249168395996
+800
+true group count 7
+construction time 0.04902791976928711
+number of groups 14
+RNBRW time m 9.185173034667969
+number of groups 13
+Cycle time n 1.3558900356292725
+number of groups 8
+Cycle time nlogn 8.299564123153687
+number of groups 7
+Cycle time m 9.266430139541626
+1600
+true group count 7
+construction time 0.12969708442687988
+number of groups 14
+RNBRW time m 44.12632703781128
+number of groups 14
+Cycle time n 5.406407833099365
+number of groups 9
+Cycle time nlogn 38.541518211364746
+number of groups 9
+Cycle time m 45.15991711616516
+3200
+true group count 14
+construction time 0.26629209518432617
+number of groups 16
+RNBRW time m 246.85464215278625
+number of groups 12
+Cycle time n 24.098129272460938
+number of groups 13
+Cycle time nlogn 190.2090950012207
+number of groups 14
+Cycle time m 241.9063642024994
+6400
+true group count 29
+construction time 0.554710865020752
+number of groups 27
+RNBRW time m 1180.2975890636444
+number of groups 27
+Cycle time n 110.13440799713135
+number of groups 29
+Cycle time nlogn 961.370747089386
+number of groups 29
+Cycle time m 1188.038211107254
+12800
+true group count 41
+construction time 1.3595409393310547
+number of groups 38
+RNBRW time m 5116.661056995392
+number of groups 31
+Cycle time n 457.6414830684662
+number of groups 35
+Cycle time nlogn 4341.799288034439
 
 
+WEIGHTED CYCLE
+100
+true group count 2
+construction time 0.06338787078857422
+number of groups 8
+Cycle time n 0.024151086807250977
+number of groups 8
+Weighted Cycle time n 0.021898984909057617
+200
+true group count 3
+construction time 0.0077822208404541016
+number of groups 10
+Cycle time n 0.06189990043640137
+number of groups 12
+Weighted Cycle time n 0.06152772903442383
+400
+true group count 4
+construction time 0.019760847091674805
+number of groups 12
+Cycle time n 0.27757716178894043
+number of groups 12
+Weighted Cycle time n 0.27152204513549805
+800
+true group count 7
+construction time 0.04878687858581543
+number of groups 13
+Cycle time n 1.4110910892486572
+number of groups 12
+Weighted Cycle time n 1.40932297706604
+1600
+true group count 5
+construction time 0.1310131549835205
+number of groups 16
+Cycle time n 5.911213636398315
+number of groups 15
+Weighted Cycle time n 5.940354108810425
+3200
+true group count 18
+construction time 0.2789909839630127
+number of groups 18
+Cycle time n 24.152732849121094
+number of groups 16
+Weighted Cycle time n 23.45121693611145
+6400
+true group count 13
+construction time 0.7560482025146484
+number of groups 15
+Cycle time n 103.1943941116333
+number of groups 12
+Weighted Cycle time n 104.30369305610657
