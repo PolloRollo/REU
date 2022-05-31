@@ -1,4 +1,5 @@
 """
+David Rollo's code for testing NetworkX
 
 
 """
@@ -13,6 +14,9 @@ import matplotlib.pyplot as plt
 
 
 def testAdjacency():
+    """
+    Create and draw a graph based on an adjacency matrix
+    """
     A = createAdjacency(10, .4)
 
     G = nx.Graph()
@@ -28,6 +32,9 @@ def testAdjacency():
 
 
 def testDictionary():
+    """
+    A test to create a graph from a dictionary
+    """
     A = adjacencyToDict(createAdjacency(10, .4))
 
     G = nx.Graph()
@@ -41,6 +48,10 @@ def testDictionary():
 
 
 def createGraph(n, p):
+    """
+    A method which returns a graph with n nodes
+    Every edge has a probability p to be created
+    """
     A = createAdjacency(n, p)
 
     G = nx.Graph()
@@ -61,15 +72,13 @@ def randomWalkUntilCycle(G, cycle=False):
     We then randomly walk, without backtracking until we revisit a node
     OR we visit a node with no edges (besides backtracking).
 
-    The cycle parameter determines whether we use RNBRW (False) or David Rollo's cycle method
-
-    We return the cycle where the retracing edge connects [0] and [-1]
-    -Bad coding practice to adjust the graph in this function?
+    The cycle parameter determines whether we use RNBRW (False) or
+    We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
     """
     x, y = random.choice(list(G.edges))
     head, tail = None, None
     path = []
-    # choose a direction
+    # Choose a direction
     if random.random() > .5:
         head = x
         tail = y
@@ -88,7 +97,7 @@ def randomWalkUntilCycle(G, cycle=False):
             return None
         path.append(head)
         head, tail = random.choice(neighbors), head
-
+    # Return statements (retraced edge or cycle list)
     if cycle:
         start = path.index(head)
         cycle = path[start:]
@@ -98,15 +107,17 @@ def randomWalkUntilCycle(G, cycle=False):
 
 
 def RNBRW(G, n):
+    # update the graph edge attributes for each retraced edge found
     for _ in range(n):
-        renewal = randomWalkUntilCycle(G)
-        if renewal is not None:
-            G[renewal[0]][renewal[1]]['rnbrw'] += 1
+        retrace = randomWalkUntilCycle(G)
+        if retrace is not None:
+            G[retrace[0]][retrace[1]]['rnbrw'] += 1
         else:
             _ -= 1
 
 
 def CNBRW(G, n):
+    # Update the graph edge attributes for each edge found in a cycle
     for _ in range(n):
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
@@ -117,6 +128,10 @@ def CNBRW(G, n):
 
 
 def weightedCNBRW(G, n):
+    """
+    Update the graph edge attributes for each edge found in a cycle
+    Update by each edge by reciprocal cycle length
+    """
     for _ in range(n):
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
@@ -127,6 +142,10 @@ def weightedCNBRW(G, n):
 
 
 def cycleStudy(G, n):
+    """
+    Test how often cycles occur completely within communities or across communities
+    Depends on LFR benchmark labels for communities
+    """
     inGroupCycleLength = {}
     outGroupCycleLength = {}
     inGroupCount = 0
@@ -134,11 +153,9 @@ def cycleStudy(G, n):
     for _ in range(n):
         cycle = randomWalkUntilCycle(G, cycle=True)
         group = G.nodes[cycle[0]]['community']
-        # print(group)
         inGroup = True
         for node in cycle:
             if node not in group:
-                # print(node)
                 inGroup = False
                 outGroupCount += 1
                 if len(cycle) in outGroupCycleLength:
@@ -158,6 +175,10 @@ def cycleStudy(G, n):
 
 
 def retraceStudy(G, n):
+    """
+    Test how often retraced edges occur completely within communities or across communities
+    Depends on LFR benchmark labels for communities
+    """
     inGroupCount = 0
     outGroupCount = 0
     for _ in range(n):
@@ -172,6 +193,10 @@ def retraceStudy(G, n):
 
 
 def randomEdge(G, n):
+    """
+    Test how often random edges occur completely within communities or across communities
+    Depends on LFR benchmark labels for communities
+    """
     inGroupCount = 0
     outGroupCount = 0
     for _ in range(n):
@@ -187,6 +212,12 @@ def randomEdge(G, n):
 
 
 def communityBuilder(nodes, group_count, p_in, p_out):
+    """
+    Create a graph with nodes evenly divided between group_count
+    p_in is probability of edge within group
+    p_out is probability of edge across groups
+    Returns the networkx graph object
+    """
     G = nx.Graph()
     groups = []
     # Add connections within groups
@@ -249,6 +280,10 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
 
 
 def modularity(G, communities):
+    """
+    Given a graph G and a list of communities calculate and return the modularity
+    -.5 <= M <= 1
+    """
     m = 2 * len(G.edges)
     modularityVal = 0
     n = len(G.nodes)
