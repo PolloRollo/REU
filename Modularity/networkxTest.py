@@ -75,18 +75,13 @@ def randomWalkUntilCycle(G, cycle=False):
     The cycle parameter determines whether we use RNBRW (False) or
     We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
     """
-    x, y = random.choice(list(G.edges))
-    head, tail = None, None
-    path = []
+    head, tail = random.choice(list(G.edges))
+
     # Choose a direction
     if random.random() > .5:
-        head = x
-        tail = y
-        path = [tail]
-    else:
-        head = y
-        tail = x
-        path = [tail]
+        head, tail = tail, head
+    path = [tail]
+
     # Random walk until cycle
     while head not in path:
         neighbors = list(G[head])
@@ -109,7 +104,7 @@ def randomWalkUntilCycle(G, cycle=False):
 def RNBRW(G, n):
     # update the graph edge attributes for each retraced edge found
     i = 0
-    nx.set_edge_attributes(G, values=0, name='rnbrw')
+    nx.set_edge_attributes(G, values=1, name='rnbrw')
     while i < n:
         retrace = randomWalkUntilCycle(G)
         if retrace is not None:
@@ -117,15 +112,29 @@ def RNBRW(G, n):
             i += 1
 
 
+def RNBRWsubprogram(G, n):
+    # Designed for parallel programming returns a queue of updates for G
+    queue = []
+    i = 0
+    while i < n:
+        retrace = randomWalkUntilCycle(G)
+        if retrace is not None:
+            queue.append(retrace)
+            i += 1
+    return queue
+
+
+
 def CNBRW(G, n):
     # Update the graph edge attributes for each edge found in a cycle
-    for _ in range(n):
+    i = 0
+    nx.set_edge_attributes(G, values=1, name='cycle')
+    while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
-            for i in range(len(cycle)):
-                G[cycle[i]][cycle[i-1]]['cycle'] += 1
-        else:
-            _ -= 1
+            for node in range(len(cycle)):
+                G[cycle[node]][cycle[node-1]]['cycle'] += 1
+            i += 1
 
 
 def weightedCNBRW(G, n):
@@ -192,12 +201,12 @@ def retraceStudy(G, n):
     print("outGroupCount", outGroupCount)
     return [inGroupCount, outGroupCount]
 
-
+"""
 def randomEdge(G, n):
-    """
+    
     Test how often random edges occur completely within communities or across communities
     Depends on LFR benchmark labels for communities
-    """
+    
     inGroupCount = 0
     outGroupCount = 0
     for _ in range(n):
@@ -210,6 +219,7 @@ def randomEdge(G, n):
     # print("inGroupCount", inGroupCount)
     # print("outGroupCount", outGroupCount)
     return [inGroupCount, outGroupCount]
+"""
 
 
 def communityBuilder(nodes, group_count, p_in, p_out):
@@ -274,9 +284,9 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
                     min_degree, max_degree, min_community, max_community, tol, max_iters)
 
     G.remove_edges_from(nx.selfloop_edges(G))
-    nx.set_edge_attributes(G, values=0, name='rnbrw')
-    nx.set_edge_attributes(G, values=0, name='cycle')
-    nx.set_edge_attributes(G, values=0, name='random')
+    nx.set_edge_attributes(G, values=1, name='rnbrw')
+    nx.set_edge_attributes(G, values=1, name='cycle')
+    nx.set_edge_attributes(G, values=1, name='unweighted')
     return G
 
 
@@ -291,11 +301,12 @@ def modularity(G, communities):
     for group in communities:
         for i in group:
             for j in range(n):
-                A = 0
-                if j in G.adj[i]:
-                    A = 1
                 if j in group:  # Dirac delta
-                    modularityVal += A - (len(G[i]) * len(G[j]) / (m-1))
+                    A = 0
+                    if j in G.adj[i]:  # If there is an edge
+                        A = 1
+                    modularityVal += A - (len(G[i]) * len(G[j]) / (m))
+
     modularityVal /= m
     return modularityVal
 
