@@ -7,7 +7,6 @@
 from networkxTest import *
 # from graphData import *
 from time import time
-import sklearn.metrics
 
 
 def main(n, group_count=25, draw=False):
@@ -91,57 +90,42 @@ def main(n, group_count=25, draw=False):
 
 def mainRetraceStudy(n):
     print("\n", n)
-    # start = time()
+    start = time()
     G = LFRBenchmark(n)
-    # G = nx.barbell_graph(10, 2)
+    # G = nx.barbell_graph(4, 0)
 
-    """
     # IDENTIFY PRE-BUILT COMMUNITIES
-    communityCount = 0
-    communities = set()
-    communityList = []
-    for node in G.nodes:
-        if node not in communities:
-            communities |= G.nodes[node]['community']
-            communityCount += 1
-            communityList.append(G.nodes[node]['community'])
-            # print(G.nodes[node]['community'])
-
-    print("true group count", communityCount)
-    # print("true group count", group_count)
+    communityList = list({frozenset(G.nodes[v]["community"]) for v in G})
     print("construction time", time() - start)
-    """
 
     # CLASSIFY COMMUNITIES unweighted
     print("\n UNWEIGHTED")
     start = time()
-    unweightedGroups = nx.algorithms.community.louvain_communities(G, 'unweighted', seed=123)
-    # print("number of groups", len(unweightedGroups))
-    modValUnweighted = nx.algorithms.community.modularity(G, unweightedGroups)
-    print("Modularity", modValUnweighted)
+    unweightedGroups = nx.algorithms.community.louvain_communities(G)
     print("Control time", time() - start)
+    print("Modularity", nx.algorithms.community.modularity(G, unweightedGroups))
+    print("NMI", NMI(n, communityList, unweightedGroups))
+    print("adjNMI", adjustNMI(n, communityList, unweightedGroups))
 
     # CLASSIFY COMMUNITIES by RNBRW
     print("\n RNBRW")
     start = time()
     RNBRW(G, len(G.edges))
-    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=123)
-    # print("cycle", cycle)
-    # print("number of groups", len(rnbrwGroups))
-    modValRNBRW = nx.algorithms.community.modularity(G, rnbrwGroups)
-    print("Modularity", modValRNBRW)
+    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw')
     print("RNBRW time m", time() - start)
-    # print(G.adj)
+    print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
+    print("NMI", NMI(n, communityList, rnbrwGroups))
+    print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
 
     # CLASSIFY COMMUNITIES by Cycle
     print("\n CYCLE")
     start = time()
-    CNBRW(G, 2 * len(G.nodes))
-    cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=123)
-    # print("number of groups", len(cycleGroups))
-    modValCNBRW = nx.algorithms.community.modularity(G, cycleGroups)
-    print("Modularity", modValCNBRW)
-    print("CNBRW time 2 n", time() - start)
+    CNBRW(G, len(G.nodes))
+    cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle')
+    print("CNBRW time n", time() - start)
+    print("Modularity", nx.algorithms.community.modularity(G, cycleGroups))
+    print("NMI", NMI(n, communityList, cycleGroups))
+    print("adjNMI", adjustNMI(n, communityList, cycleGroups))
 
 
 def mainCycleStudy(n):

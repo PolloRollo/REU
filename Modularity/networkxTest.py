@@ -6,11 +6,11 @@ David Rollo's code for testing NetworkX
 
 import networkx as nx
 import random
-from math import floor
-from math import log
+from math import floor, log
 from graphData import createAdjacency
 from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
+from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_score
 
 
 def testAdjacency():
@@ -201,26 +201,6 @@ def retraceStudy(G, n):
     print("outGroupCount", outGroupCount)
     return [inGroupCount, outGroupCount]
 
-"""
-def randomEdge(G, n):
-    
-    Test how often random edges occur completely within communities or across communities
-    Depends on LFR benchmark labels for communities
-    
-    inGroupCount = 0
-    outGroupCount = 0
-    for _ in range(n):
-        a, b = random.choice(list(G.edges))
-        G[a][b]['random'] += 1
-        if G.nodes[a] == G.nodes[b]:
-            inGroupCount += 1
-        else:
-            outGroupCount += 1
-    # print("inGroupCount", inGroupCount)
-    # print("outGroupCount", outGroupCount)
-    return [inGroupCount, outGroupCount]
-"""
-
 
 def communityBuilder(nodes, group_count, p_in, p_out):
     """
@@ -250,9 +230,9 @@ def communityBuilder(nodes, group_count, p_in, p_out):
     return G
 
 
-def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
+def LFRBenchmark(n, tau1=2.5, tau2=1.5, average_degree=None, mu=.1,
                  min_degree=None, max_degree=None, min_community=None,
-                 max_community=None, tol=.5, max_iters=2000):
+                 max_community=None, tol=.5, max_iters=5000):
     """
     Benchmark test to determine how well an algorithm is at community detection.
 
@@ -272,21 +252,20 @@ def LFRBenchmark(n, tau1=3, tau2=3, average_degree=None, mu=.4,
     Returns networkx graph object
     """
     if average_degree is None and min_degree is None:
-        average_degree = 2*log(n)
+        average_degree = 7
     if max_degree is None:
         max_degree = n
     if min_community is None:
-        min_community = log(n)*average_degree
+        min_community = 30
     if max_community is None:
-        max_community = n
+        max_community = 70
 
     G = nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
                     min_degree, max_degree, min_community, max_community, tol, max_iters)
 
     G.remove_edges_from(nx.selfloop_edges(G))
-    nx.set_edge_attributes(G, values=1, name='rnbrw')
-    nx.set_edge_attributes(G, values=1, name='cycle')
-    nx.set_edge_attributes(G, values=1, name='unweighted')
+    nx.set_edge_attributes(G, values=0, name='rnbrw')
+    nx.set_edge_attributes(G, values=0, name='cycle')
     return G
 
 
@@ -309,6 +288,24 @@ def modularity(G, communities):
 
     modularityVal /= m
     return modularityVal
+
+
+def NMI(n, trueGroups, testGroups):
+    return normalized_mutual_info_score(groupsToList(n, trueGroups), groupsToList(n, testGroups))
+
+
+def adjustNMI(n, trueGroups, testGroups):
+    return adjusted_mutual_info_score(groupsToList(n, trueGroups), groupsToList(n, testGroups))
+
+
+def groupsToList(n, communities):
+    # Index i stores the ith node's community
+    groupFormat = [0 for _ in range(n)]
+    for group in range(len(communities)):
+        for val in communities[group]:
+            groupFormat[val] = group
+    return groupFormat
+
 
 # testAdjacency()
 # testDictionary()
