@@ -11,6 +11,7 @@ from graphData import createAdjacency
 from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
 from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_score
+import numpy as np
 
 
 def testAdjacency():
@@ -104,12 +105,14 @@ def randomWalkUntilCycle(G, cycle=False):
 def RNBRW(G, n):
     # update the graph edge attributes for each retraced edge found
     i = 0
-    nx.set_edge_attributes(G, values=1, name='rnbrw')
+    delta = 1/n
+    nx.set_edge_attributes(G, values=delta, name='rnbrw')
     while i < n:
         retrace = randomWalkUntilCycle(G)
         if retrace is not None:
-            G[retrace[0]][retrace[1]]['rnbrw'] += 1
+            G[retrace[0]][retrace[1]]['rnbrw'] += delta
             i += 1
+    return True
 
 
 def rnbrwSubprogram(G, n):
@@ -127,13 +130,15 @@ def rnbrwSubprogram(G, n):
 def CNBRW(G, n):
     # Update the graph edge attributes for each edge found in a cycle
     i = 0
-    nx.set_edge_attributes(G, values=1, name='cycle')
+    delta = 1/n
+    nx.set_edge_attributes(G, values=delta, name='cycle')
     while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
             for node in range(len(cycle)):
-                G[cycle[node]][cycle[node-1]]['cycle'] += 1
+                G[cycle[node]][cycle[node-1]]['cycle'] += delta
             i += 1
+    return True
 
 
 def weightedCNBRW(G, n):
@@ -141,13 +146,15 @@ def weightedCNBRW(G, n):
     Update the graph edge attributes for each edge found in a cycle
     Update by each edge by reciprocal cycle length
     """
-    for _ in range(n):
+    i = 0
+    nx.set_edge_attributes(G, values=1/n, name='weightedCycle')
+    while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
-            for i in range(len(cycle)):
-                G[cycle[i]][cycle[i-1]]['cycle'] += 1/len(cycle)
-        else:
-            _ -= 1
+            for node in range(len(cycle)):
+                G[cycle[node]][cycle[node-1]]['cycle'] += 1/len(cycle)
+            i += 1
+    return True
 
 
 def cycleStudy(G, n):
@@ -263,8 +270,6 @@ def LFRBenchmark(
         return LFRBenchmark(n, tau1, tau2, average_degree, mu, min_degree, max_degree, min_community, max_community)
 
     G.remove_edges_from(nx.selfloop_edges(G))
-    nx.set_edge_attributes(G, values=0, name='rnbrw')
-    nx.set_edge_attributes(G, values=0, name='cycle')
     return G
 
 

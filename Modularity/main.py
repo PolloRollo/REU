@@ -100,6 +100,16 @@ def mainRetraceStudy(n):
     print("NMI", NMI(n, communityList, cycleGroups))
     print("adjNMI", adjustNMI(n, communityList, cycleGroups))
 
+    # CLASSIFY COMMUNITIES by Weighted Cycle
+    print("\n WEIGHTED CYCLE")
+    start = time()
+    weightedCNBRW(G, len(G.nodes))
+    weightedCycleGroups = nx.algorithms.community.louvain_communities(G, 'weightedCycle')
+    print("CNBRW time n", time() - start)
+    print("Modularity", nx.algorithms.community.modularity(G, weightedCycleGroups))
+    print("NMI", NMI(n, communityList, weightedCycleGroups))
+    print("adjNMI", adjustNMI(n, communityList, weightedCycleGroups))
+
 
 def mainCycleStudy(n):
     G = LFRBenchmark(n)
