@@ -6,7 +6,7 @@ David Rollo's code for testing NetworkX
 
 import networkx as nx
 import random
-from math import floor, log
+from math import floor
 from graphData import createAdjacency
 from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
@@ -112,7 +112,7 @@ def RNBRW(G, n):
             i += 1
 
 
-def RNBRWsubprogram(G, n):
+def rnbrwSubprogram(G, n):
     # Designed for parallel programming returns a queue of updates for G
     queue = []
     i = 0
@@ -122,7 +122,6 @@ def RNBRWsubprogram(G, n):
             queue.append(retrace)
             i += 1
     return queue
-
 
 
 def CNBRW(G, n):
@@ -230,25 +229,20 @@ def communityBuilder(nodes, group_count, p_in, p_out):
     return G
 
 
-def LFRBenchmark(n, tau1=2.5, tau2=1.5, average_degree=None, mu=.1,
-                 min_degree=None, max_degree=None, min_community=None,
-                 max_community=None, tol=.5, max_iters=5000):
+def LFRBenchmark(
+        # !!! only min_degree XOR average_degree must be specified, otherwise a NetworkXError is raised. !!! #
+        n,  # int - Number of nodes in the created graph.
+        tau1=2.5,  # float > 1 - Describes degree distribution for nodes.
+        tau2=1.5,  # float > 1 - Describes degree distribution for community size.
+        average_degree=None,  # 0 <= float <= n - Desired average degree of nodes in the created graph.
+        mu=.1,  # 0 <= float <= 1 - Fraction of inter-community edges incident to each node.
+        min_degree=None,  # 0 <= int <= n - Minimum degree of nodes in the created graph.
+        max_degree=None,  # int - Maximum degree of nodes in the created graph, set to n if not specified.
+        min_community=None,  # int - Minimum size of communities in the graph, set to min_degree if not specified.
+        max_community=None,  # int - Maximum size of communities in the graph, set to n if not specified.
+):
     """
     Benchmark test to determine how well an algorithm is at community detection.
-
-    Parameters
-        n:      int - Number of nodes in the created graph.
-        tau1:   float - Power law exponent for the degree distribution of the created graph. This value must be strictly greater than one.
-        tau2:   float - Power law exponent for the community size distribution in the created graph. This value must be strictly greater than one.
-        mu:     float - Fraction of inter-community edges incident to each node. This value must be in the interval [0, 1].
-        average_degree: float - Desired average degree of nodes in the created graph. This value must be in the interval [0, n]. Exactly one of this and min_degree must be specified, otherwise a NetworkXError is raised.
-        min_degree: int - Minimum degree of nodes in the created graph. This value must be in the interval [0, n]. Exactly one of this and average_degree must be specified, otherwise a NetworkXError is raised.
-        max_degree: int - Maximum degree of nodes in the created graph. If not specified, this is set to n, the total number of nodes in the graph.
-        min_community: int - Minimum size of communities in the graph. If not specified, this is set to min_degree.
-        max_community: int - Maximum size of communities in the graph. If not specified, this is set to n, the total number of nodes in the graph.
-        tol:    float - Tolerance when comparing floats, specifically when comparing average degree values.
-        max_iters: int - Maximum number of iterations to try to create the community sizes, degree distribution, and community affiliations.
-
     Returns networkx graph object
     """
     if average_degree is None and min_degree is None:
@@ -260,8 +254,13 @@ def LFRBenchmark(n, tau1=2.5, tau2=1.5, average_degree=None, mu=.1,
     if max_community is None:
         max_community = 70
 
-    G = nx.generators.community.LFR_benchmark_graph(n, tau1, tau2, mu, average_degree,
-                    min_degree, max_degree, min_community, max_community, tol, max_iters)
+    G = None
+
+    try:
+        G = nx.generators.community.LFR_benchmark_graph(n=n, tau1=tau1, tau2=tau2, average_degree=average_degree, mu=mu,
+    min_degree=min_degree, max_degree=max_degree, min_community=min_community, max_community=max_community)
+    except nx.ExceededMaxIterations:
+        return LFRBenchmark(n, tau1, tau2, average_degree, mu, min_degree, max_degree, min_community, max_community)
 
     G.remove_edges_from(nx.selfloop_edges(G))
     nx.set_edge_attributes(G, values=0, name='rnbrw')
@@ -284,10 +283,15 @@ def modularity(G, communities):
                     A = 0
                     if j in G.adj[i]:  # If there is an edge
                         A = 1
-                    modularityVal += A - (len(G[i]) * len(G[j]) / (m))
+                    modularityVal += A - (len(G[i]) * len(G[j]) / m)
 
     modularityVal /= m
     return modularityVal
+
+
+def identifyLFRCommunities(G):
+    # IDENTIFY PRE-BUILT COMMUNITIES
+    return list({frozenset(G.nodes[v]["community"]) for v in G})
 
 
 def NMI(n, trueGroups, testGroups):
@@ -305,11 +309,3 @@ def groupsToList(n, communities):
         for val in communities[group]:
             groupFormat[val] = group
     return groupFormat
-
-
-# testAdjacency()
-# testDictionary()
-
-
-
-

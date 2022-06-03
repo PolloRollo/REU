@@ -7,6 +7,7 @@
 from networkxTest import *
 # from graphData import *
 from time import time
+from math import log
 
 
 def main(n, group_count=25, draw=False):
@@ -16,68 +17,40 @@ def main(n, group_count=25, draw=False):
     # G = communityBuilder(n, group_count, p_in=.7, p_out=.2)
     G = LFRBenchmark(n)
     # IDENTIFY PRE-BUILT COMMUNITIES
-
-    communityCount = 0
-    communities = set()
-    communityList = []
-    for node in G.nodes:
-        if node not in communities:
-            communities |= G.nodes[node]['community']
-            communityCount += 1
-            communityList.append(G.nodes[node]['community'])
-            # print(G.nodes[node]['community'])
-    modValLFR = modularity(G, communityList)
-    print("true group count", communityCount)
+    communityList = identifyLFRCommunities(G)
     print("construction time", time() - start)
-    print(modValLFR)
+    print("modularity", modularity(G, communityList))
 
     # CLASSIFY COMMUNITIES
     start = time()
     RNBRW(G, len(G.edges))
     rnbrw = nx.algorithms.community.louvain_communities(G, 'rnbrw', 1)
-    # print("rnbrw", rnbrw)
-    modValRnbrw = modularity(G, rnbrw)
-
-    print("number of groups", len(rnbrw))
     print("RNBRW time m", time() - start)
-    print(modValRnbrw)
+    print("Modularity", modularity(G, rnbrw))
 
     start = time()
     CNBRW(G, n)
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
-    # print("cycle", cycle)
-    modValCycle = modularity(G, cycle)
-
-    print("number of groups", len(cycle))
     print("Cycle time n", time() - start)
-    print(modValCycle)
+    print("Modularity", modularity(G, cycle))
 
     start = time()
     CNBRW(G, 2 * n)
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
-    # print("cycle", cycle)
-    modValCycle = modularity(G, cycle)
-    print("number of groups", len(cycle))
     print("Cycle time 2n", time() - start)
-    print(modValCycle)
+    print("Modularity", modularity(G, cycle))
 
     start = time()
     CNBRW(G, floor(n * log(n)))
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
-    # print("cycle", cycle)
-    modValCycle = modularity(G, cycle)
-    print("number of groups", len(cycle))
     print("Cycle time nlogn", time() - start)
-    print(modValCycle)
+    print("Modularity", modularity(G, cycle))
 
     start = time()
     CNBRW(G, len(G.edges))
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
-    # print("cycle", cycle)
-    modValCycle = modularity(G, cycle)
-    print("number of groups", len(cycle))
     print("Cycle time m", time() - start)
-    print(modValCycle)
+    print("Modularity", modularity(G, cycle))
 
     if draw:
         rnbrw = [edge for edge in G.edges() if G[edge[0]][edge[1]]['rnbrw'] > 0]
@@ -95,7 +68,7 @@ def mainRetraceStudy(n):
     # G = nx.barbell_graph(4, 0)
 
     # IDENTIFY PRE-BUILT COMMUNITIES
-    communityList = list({frozenset(G.nodes[v]["community"]) for v in G})
+    communityList = identifyLFRCommunities(G)
     print("construction time", time() - start)
 
     # CLASSIFY COMMUNITIES unweighted

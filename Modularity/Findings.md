@@ -1,3 +1,13 @@
 # Directed Network Community Detection
 
-Hello World
+Definitions
+
+#### Normalized Mutual Information
+
+#### Modularity
+
+#### Non-backtracking random walk
+
+#### Retracing edge
+
+
