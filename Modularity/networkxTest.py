@@ -105,13 +105,19 @@ def randomWalkUntilCycle(G, cycle=False):
 def RNBRW(G, n):
     # update the graph edge attributes for each retraced edge found
     i = 0
-    delta = 1/n
-    nx.set_edge_attributes(G, values=delta, name='rnbrw')
+    initial = .01
+    divisor = initial * len(G.edges)
+    delta = 1
+    nx.set_edge_attributes(G, values=.01, name='rnbrw')
     while i < n:
         retrace = randomWalkUntilCycle(G)
         if retrace is not None:
             G[retrace[0]][retrace[1]]['rnbrw'] += delta
+            divisor += delta
             i += 1
+    for (n1, n2, rnbrw) in G.edges.data('rnbrw'):
+        G[n1][n2]['rnbrw'] /= divisor
+
     return True
 
 
@@ -131,7 +137,7 @@ def CNBRW(G, n):
     # Update the graph edge attributes for each edge found in a cycle
     i = 0
     delta = 1/n
-    nx.set_edge_attributes(G, values=delta, name='cycle')
+    nx.set_edge_attributes(G, values=.01, name='cycle')
     while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
@@ -147,7 +153,7 @@ def weightedCNBRW(G, n):
     Update by each edge by reciprocal cycle length
     """
     i = 0
-    nx.set_edge_attributes(G, values=1/n, name='weightedCycle')
+    nx.set_edge_attributes(G, values=.01, name='weightedCycle')
     while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
@@ -312,5 +318,5 @@ def groupsToList(n, communities):
     groupFormat = [0 for _ in range(n)]
     for group in range(len(communities)):
         for val in communities[group]:
-            groupFormat[val] = group
+            groupFormat[int(val)] = group
     return groupFormat

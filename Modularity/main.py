@@ -8,6 +8,7 @@ from networkxTest import *
 # from graphData import *
 from time import time
 from math import log
+import createGraphFiles
 
 
 def main(n, group_count=25, draw=False):
@@ -38,12 +39,6 @@ def main(n, group_count=25, draw=False):
     CNBRW(G, 2 * n)
     cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
     print("Cycle time 2n", time() - start)
-    print("Modularity", modularity(G, cycle))
-
-    start = time()
-    CNBRW(G, floor(n * log(n)))
-    cycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
-    print("Cycle time nlogn", time() - start)
     print("Modularity", modularity(G, cycle))
 
     start = time()
@@ -154,15 +149,43 @@ def weightedCycleStudy(n):
     print("Cycle time n", time() - start)
 
     start = time()
-    weightedCNBRW(G, n)
-    weightedCycle = nx.algorithms.community.louvain_communities(G, 'cycle', 1)
+    CNBRW(G, n)
+    weightedCycle = nx.algorithms.community.louvain_communities(G, 'weightedCycle', 1)
     # print("cycle", cycle)
     print("number of groups", len(weightedCycle))
     print("Weighted Cycle time n", time() - start)
 
 
-for i in range(4):
-    # main(100 * 2**i)
-    # mainCycleStudy(100 * 2**i)
-    # weightedCycleStudy(100 * 2**i)
-    mainRetraceStudy(1000 * 2**i)
+def createGraphs():
+    for i in [500, 1000, 5000, 10000]:
+        n = i
+        G = LFRBenchmark(n, average_degree=7)
+        string = "7d_" + str(n)
+        createGraphFiles.writeGraph(G, "graphs", string)
+        print(string)
+        communities = identifyLFRCommunities(G)
+        createGraphFiles.writeCommunity(communities, "communities", string)
+
+        # G = createGraphFiles.read("graphs/karate_club")
+        # nx.draw(G, pos=nx.circular_layout(G))
+        # plt.show()
+
+
+createGraphs()
+
+n = 1000
+start = time()
+G = createGraphFiles.readGraph("graphs/1ln_1000")
+communityList = createGraphFiles.readCommunity("communities/1ln_1000")
+RNBRW(G, len(G.edges))
+rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw')
+print("RNBRW time m", time() - start)
+print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
+print("NMI", NMI(n, communityList, rnbrwGroups))
+print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
+
+
+
+# createGraphs()
+
+
