@@ -136,8 +136,9 @@ def rnbrwSubprogram(G, n):
 def CNBRW(G, n):
     # Update the graph edge attributes for each edge found in a cycle
     i = 0
+    initial = .01
     delta = 1/n
-    nx.set_edge_attributes(G, values=.01, name='cycle')
+    nx.set_edge_attributes(G, values=initial, name='cycle')
     while i < n:
         cycle = randomWalkUntilCycle(G, cycle=True)
         if cycle is not None:
@@ -245,8 +246,8 @@ def communityBuilder(nodes, group_count, p_in, p_out):
 def LFRBenchmark(
         # !!! only min_degree XOR average_degree must be specified, otherwise a NetworkXError is raised. !!! #
         n,  # int - Number of nodes in the created graph.
-        tau1=2.5,  # float > 1 - Describes degree distribution for nodes.
-        tau2=1.5,  # float > 1 - Describes degree distribution for community size.
+        tau1=3,  # float > 1 - Describes degree distribution for nodes.
+        tau2=2,  # float > 1 - Describes degree distribution for community size.
         average_degree=None,  # 0 <= float <= n - Desired average degree of nodes in the created graph.
         mu=.1,  # 0 <= float <= 1 - Fraction of inter-community edges incident to each node.
         min_degree=None,  # 0 <= int <= n - Minimum degree of nodes in the created graph.

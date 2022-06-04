@@ -56,15 +56,10 @@ def main(n, group_count=25, draw=False):
         plt.show()
 
 
-def mainRetraceStudy(n):
-    print("\n", n)
-    start = time()
-    G = LFRBenchmark(n)
-    # G = nx.barbell_graph(4, 0)
-
-    # IDENTIFY PRE-BUILT COMMUNITIES
-    communityList = identifyLFRCommunities(G)
-    print("construction time", time() - start)
+def mainRetraceStudy():
+    n = 1000
+    G = createGraphFiles.readGraph("graphs/1ln_1000")
+    communityList = createGraphFiles.readCommunity("communities/1ln_1000")
 
     # CLASSIFY COMMUNITIES unweighted
     print("\n UNWEIGHTED")
@@ -157,10 +152,10 @@ def weightedCycleStudy(n):
 
 
 def createGraphs():
-    for i in [500, 1000, 5000, 10000]:
+    for i in [1000, 5000, 10000]:
         n = i
-        G = LFRBenchmark(n, average_degree=7)
-        string = "7d_" + str(n)
+        G = LFRBenchmark(n, average_degree=2 * log(n))
+        string = "2ln_" + str(n)
         createGraphFiles.writeGraph(G, "graphs", string)
         print(string)
         communities = identifyLFRCommunities(G)
@@ -171,21 +166,20 @@ def createGraphs():
         # plt.show()
 
 
-createGraphs()
-
-n = 1000
-start = time()
-G = createGraphFiles.readGraph("graphs/1ln_1000")
-communityList = createGraphFiles.readCommunity("communities/1ln_1000")
-RNBRW(G, len(G.edges))
-rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw')
-print("RNBRW time m", time() - start)
-print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
-print("NMI", NMI(n, communityList, rnbrwGroups))
-print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
-
-
-
-# createGraphs()
+def createGraphPackage():
+    nodeList = [500, 1000, 5000, 10000]
+    muList = [.1, .2, .3, .4]
+    for n in nodeList:
+        for mu in muList:
+            start = time()
+            while time() - start < 30:
+                G = LFRBenchmark(n, average_degree=log(n))
+                string = "1ln_" + str(n) + "_" + str(mu)[-1]
+                createGraphFiles.writeGraph(G, "graphs", string)
+                print(string)
+                communities = identifyLFRCommunities(G)
+                createGraphFiles.writeCommunity(communities, "communities", string)
+                break
 
 
+createGraphPackage()
