@@ -173,13 +173,16 @@ def createGraphPackage():
         for mu in muList:
             start = time()
             while time() - start < 30:
-                G = LFRBenchmark(n, average_degree=log(n))
-                string = "1ln_" + str(n) + "_" + str(mu)[-1]
+                G = LFRBenchmark(n, average_degree=3 * log(n), mu=mu)
+                if G is None:
+                    continue
+                string = "3ln_" + str(n) + "_" + str(mu)[-1]
                 createGraphFiles.writeGraph(G, "graphs", string)
                 print(string)
                 communities = identifyLFRCommunities(G)
                 createGraphFiles.writeCommunity(communities, "communities", string)
                 break
+            # print()
 
 
 createGraphPackage()

@@ -246,8 +246,8 @@ def communityBuilder(nodes, group_count, p_in, p_out):
 def LFRBenchmark(
         # !!! only min_degree XOR average_degree must be specified, otherwise a NetworkXError is raised. !!! #
         n,  # int - Number of nodes in the created graph.
-        tau1=3,  # float > 1 - Describes degree distribution for nodes.
-        tau2=2,  # float > 1 - Describes degree distribution for community size.
+        tau1=2.5,  # float > 1 - Describes degree distribution for nodes.
+        tau2=1.5,  # float > 1 - Describes degree distribution for community size.
         average_degree=None,  # 0 <= float <= n - Desired average degree of nodes in the created graph.
         mu=.1,  # 0 <= float <= 1 - Fraction of inter-community edges incident to each node.
         min_degree=None,  # 0 <= int <= n - Minimum degree of nodes in the created graph.
@@ -274,7 +274,8 @@ def LFRBenchmark(
         G = nx.generators.community.LFR_benchmark_graph(n=n, tau1=tau1, tau2=tau2, average_degree=average_degree, mu=mu,
     min_degree=min_degree, max_degree=max_degree, min_community=min_community, max_community=max_community)
     except nx.ExceededMaxIterations:
-        return LFRBenchmark(n, tau1, tau2, average_degree, mu, min_degree, max_degree, min_community, max_community)
+        return G
+        # return LFRBenchmark(n, tau1, tau2, average_degree, mu, min_degree, max_degree, min_community, max_community)
 
     G.remove_edges_from(nx.selfloop_edges(G))
     return G
