@@ -10,4 +10,12 @@ Definitions
 
 #### Retracing edge
 
+---
+
+Why does RNBRW work?
+
+Why should cycles work?
+
+Iterating through lists is significantly faster compared to randomly selecting
+
 
