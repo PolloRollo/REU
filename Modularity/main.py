@@ -57,10 +57,10 @@ def main(n, group_count=25, draw=False):
 
 
 def mainRetraceStudy(n=1000):
-    G = communityBuilder(n, floor(sqrt(n)), .75, .25)
-    G.remove_edges_from(nx.selfloop_edges(G))
+    # G = communityBuilder(n, floor(sqrt(n)), .45, .03)
+    # G.remove_edges_from(nx.selfloop_edges(G))
     # IDENTIFY PRE-BUILT COMMUNITIES
-    # G = createGraphFiles.readAll("7_1000_4.txt")
+    G = createGraphFiles.readAll("7_1000_4.txt")
     communityList = identifyLFRCommunities(G)
 
     # CLASSIFY COMMUNITIES unweighted
@@ -68,17 +68,17 @@ def mainRetraceStudy(n=1000):
     start = time()
     unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
     print("Control time", time() - start)
-    # print("Modularity", nx.algorithms.community.modularity(G, unweightedGroups))
+    print("Modularity", nx.algorithms.community.modularity(G, unweightedGroups))
     # print("NMI", NMI(n, communityList, unweightedGroups))
     print("adjNMI", adjustNMI(n, communityList, unweightedGroups))
 
     # CLASSIFY COMMUNITIES by Equal RNBRW
     print("\n EQUAL RNBRW")
     start = time()
-    equalRNBRW(G)
+    equalRNBRW(G, 10)
     rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'equal', seed=100)
     print("RNBRW time m", time() - start)
-    #print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
+    print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
     #print("NMI", NMI(n, communityList, rnbrwGroups))
     print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
 
@@ -88,7 +88,7 @@ def mainRetraceStudy(n=1000):
     RNBRW(G, 2*len(G.edges))
     rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
     print("RNBRW time m", time() - start)
-    #print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
+    print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
     #print("NMI", NMI(n, communityList, rnbrwGroups))
     print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
 
@@ -98,7 +98,7 @@ def mainRetraceStudy(n=1000):
     CNBRW(G, len(G.nodes))
     cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
     print("CNBRW time n", time() - start)
-    # print("Modularity", nx.algorithms.community.modularity(G, cycleGroups))
+    print("Modularity", nx.algorithms.community.modularity(G, cycleGroups))
     # print("NMI", NMI(n, communityList, cycleGroups))
     print("adjNMI", adjustNMI(n, communityList, cycleGroups))
 
@@ -108,7 +108,7 @@ def mainRetraceStudy(n=1000):
     weightedCNBRW(G, len(G.nodes))
     weightedCycleGroups = nx.algorithms.community.louvain_communities(G, 'weightedCycle', seed=100)
     print("CNBRW time n", time() - start)
-    #print("Modularity", nx.algorithms.community.modularity(G, weightedCycleGroups))
+    print("Modularity", nx.algorithms.community.modularity(G, weightedCycleGroups))
     #print("NMI", NMI(n, communityList, weightedCycleGroups))
     print("adjNMI", adjustNMI(n, communityList, weightedCycleGroups))
 
@@ -151,5 +151,5 @@ def createGraphPackage(c=1):
             print(n, mu)
 
 
-mainRetraceStudy(400)
+mainRetraceStudy(1000)
 # createGraphPackage(c=7)

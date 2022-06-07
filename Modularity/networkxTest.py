@@ -101,14 +101,15 @@ def RNBRW(G, n):
         if completed_cycle:
             G[tail][head]['rnbrw'] += 1
             i += 1
+
     return True
 
 
-def equalRNBRW(G):
+def equalRNBRW(G, t):
     n = len(G.nodes)
     nx.set_edge_attributes(G, values=.01, name='equal')
     for head, tail in G.edges:
-        for trial in range(5):
+        for trial in range(t):
             complete, one, two = randomWalkFromEdge(G, head, tail)
             if complete:
                 G[one][two]['equal'] += 1
