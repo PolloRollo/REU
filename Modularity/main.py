@@ -57,7 +57,7 @@ def main(n, group_count=25, draw=False):
 
 
 def mainRetraceStudy(n=1000):
-    G = communityBuilder(n, floor(sqrt(n)), .80, .20)
+    G = communityBuilder(n, floor(sqrt(n)), .75, .25)
     G.remove_edges_from(nx.selfloop_edges(G))
     # IDENTIFY PRE-BUILT COMMUNITIES
     # G = createGraphFiles.readAll("7_1000_4.txt")
@@ -151,5 +151,5 @@ def createGraphPackage(c=1):
             print(n, mu)
 
 
-mainRetraceStudy(500)
+mainRetraceStudy(400)
 # createGraphPackage(c=7)
