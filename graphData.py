@@ -21,16 +21,25 @@ def degreeCount(network):
 
 # Designed to measure the "connective-ness" of a network
 # Meant to be optimized for community detection
-def modularityFunction(network):
-    d = degreeCount(network)
-    m = sum(d)
-    modularity = 0
-    n = len(network)
-    for i in range(n):
-        for j in range(n):
-            modularity += network[i][j] - (d[i] * d[j] / m) * (1)  # Change to community Dirac delta
-    modularity /= m
-    print(modularity)
+def modularity(G, communities):
+    """
+    Given a graph G and a list of communities calculate and return the modularity
+    -.5 <= M <= 1
+    """
+    m = 2 * len(G.edges)
+    modularityVal = 0
+    n = len(G.nodes)
+    for group in communities:
+        for i in group:
+            for j in range(n):
+                if j in group:  # Dirac delta
+                    A = 0
+                    if j in G.adj[i]:  # If there is an edge
+                        A = 1
+                    modularityVal += A - (len(G[i]) * len(G[j]) / m)
+
+    modularityVal /= m
+    return modularityVal
 
 
 def adjacencyToDict(adjacency):

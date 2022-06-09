@@ -60,7 +60,7 @@ def mainRetraceStudy(n=1000):
     # G = communityBuilder(n, floor(sqrt(n)), .45, .03)
     # G.remove_edges_from(nx.selfloop_edges(G))
     # IDENTIFY PRE-BUILT COMMUNITIES
-    G = createGraphFiles.readAll("7_1000_4.txt")
+    G = createGraphFiles.readAll("7_1000_3.txt")
     communityList = identifyLFRCommunities(G)
 
     # CLASSIFY COMMUNITIES unweighted
@@ -72,11 +72,11 @@ def mainRetraceStudy(n=1000):
     # print("NMI", NMI(n, communityList, unweightedGroups))
     print("adjNMI", adjustNMI(n, communityList, unweightedGroups))
 
-    # CLASSIFY COMMUNITIES by Equal RNBRW
-    print("\n EQUAL RNBRW")
+    # CLASSIFY COMMUNITIES by UNIFORM RNBRW
+    print("\n UNIFORM RNBRW")
     start = time()
-    equalRNBRW(G, 10)
-    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'equal', seed=100)
+    uniformRNBRW(G, 10)
+    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'uniform', seed=100)
     print("RNBRW time m", time() - start)
     print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
     #print("NMI", NMI(n, communityList, rnbrwGroups))
@@ -95,7 +95,7 @@ def mainRetraceStudy(n=1000):
     # CLASSIFY COMMUNITIES by Cycle
     print("\n CYCLE")
     start = time()
-    CNBRW(G, len(G.nodes))
+    CNBRW(G, t=10)
     cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
     print("CNBRW time n", time() - start)
     print("Modularity", nx.algorithms.community.modularity(G, cycleGroups))
@@ -105,7 +105,7 @@ def mainRetraceStudy(n=1000):
     # CLASSIFY COMMUNITIES by Weighted Cycle
     print("\n WEIGHTED CYCLE")
     start = time()
-    weightedCNBRW(G, len(G.nodes))
+    weightedCNBRW(G, t=10)
     weightedCycleGroups = nx.algorithms.community.louvain_communities(G, 'weightedCycle', seed=100)
     print("CNBRW time n", time() - start)
     print("Modularity", nx.algorithms.community.modularity(G, weightedCycleGroups))
@@ -151,5 +151,11 @@ def createGraphPackage(c=1):
             print(n, mu)
 
 
-mainRetraceStudy(1000)
+def testCSVGraph():
+    G = createGraphFiles.readAll("7_1000_3")
+    GraphToCSV(G, "7_1000_3")
+
+
+# mainRetraceStudy(1000)
 # createGraphPackage(c=7)
+testCSVGraph()

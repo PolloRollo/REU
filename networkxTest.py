@@ -12,6 +12,8 @@ from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
 from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_score
 import numpy as np
+import csv
+import os
 
 
 def testAdjacency():
@@ -95,27 +97,34 @@ def randomWalkUntilCycle(G):
 def RNBRW(G, n):
     # Update the graph edge attributes for each retraced edge found
     i = 0
+    divisor = len(G.edges) * .01
     nx.set_edge_attributes(G, values=0.01, name='rnbrw')
     while i < n:
         completed_cycle, tail, head = randomWalkUntilCycle(G)
         if completed_cycle:
             G[tail][head]['rnbrw'] += 1
             i += 1
-
+    for head, tail in G.edges:
+        G[head][tail]['rnbrw'] /= (divisor + n)
     return True
 
 
-def equalRNBRW(G, t):
-    n = len(G.nodes)
-    nx.set_edge_attributes(G, values=.01, name='equal')
+def uniformRNBRW(G, t):
+    initial = .01
+    divisor = len(G.edges) * initial
+    nx.set_edge_attributes(G, values=initial, name='uniform')
     for head, tail in G.edges:
         for trial in range(t):
             complete, one, two = randomWalkFromEdge(G, head, tail)
             if complete:
-                G[one][two]['equal'] += 1
+                G[one][two]['uniform'] += 1
+                divisor += 1
             complete, one, two = randomWalkFromEdge(G, tail, head)
             if complete:
-                G[one][two]['equal'] += 1
+                G[one][two]['uniform'] += 1
+                divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['uniform'] /= divisor
     return True
 
 
@@ -141,7 +150,7 @@ def randomWalkFromEdge(G, head, tail):
     return True, tail, head
 
 
-def randomWalkUntilCycle2(G, cycle=False):
+def randomWalkUntilCycle2(G, head, tail):
     """
     Beginning with input graph G, we choose a random edge in G.
     Since G is undirected, we randomly decide a head and tail for the edge.
@@ -150,11 +159,6 @@ def randomWalkUntilCycle2(G, cycle=False):
 
     We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
     """
-    head, tail = random.choice(list(G.edges))
-
-    # Choose a direction
-    if random.random() > .5:
-        head, tail = tail, head
     path = [tail]
     # Random walk until cycle
     while head not in path:
@@ -163,7 +167,7 @@ def randomWalkUntilCycle2(G, cycle=False):
         if head in neighbors:
             neighbors.remove(head)
         if len(neighbors) == 0:
-            return False, cycle
+            return False, path
         path.append(head)
         head, tail = random.choice(neighbors), head
     # Return statements (retraced edge or cycle list)
@@ -172,35 +176,50 @@ def randomWalkUntilCycle2(G, cycle=False):
     return True, cycle
 
 
-def CNBRW(G, n):
+def CNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
-    i = 0
     initial = .01
-    delta = 1
+    divisor = 0
     nx.set_edge_attributes(G, values=initial, name='cycle')
-    while i < n:
-        completed, cycle = randomWalkUntilCycle2(G, cycle=True)
-        if completed:
-            # print([G.nodes[i]['community'] for i in cycle])
-            for node in range(len(cycle)):
-                G[cycle[node]][cycle[node-1]]['cycle'] += delta
-            i += 1
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, cycle = randomWalkUntilCycle2(G, head, tail)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['cycle'] += 1
+                    divisor += 1
+            completed, cycle = randomWalkUntilCycle2(G, tail, head)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['cycle'] += 1
+                    divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['cycle'] /= divisor
     return True
 
 
-def weightedCNBRW(G, n):
+def weightedCNBRW(G, t=1):
     """
     Update the graph edge attributes for each edge found in a cycle
     Update by each edge by reciprocal cycle length
     """
-    i = 0
-    nx.set_edge_attributes(G, values=.01, name='weightedCycle')
-    while i < n:
-        completed, cycle = randomWalkUntilCycle2(G)
-        if completed:
-            for node in range(len(cycle)):
-                G[cycle[node]][cycle[node-1]]['weightedCycle'] += 1/len(cycle)
-            i += 1
+    initial = .01
+    divisor = len(G.edges) * initial
+    nx.set_edge_attributes(G, values=initial, name='weightedCycle')
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, cycle = randomWalkUntilCycle2(G, head, tail)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['weightedCycle'] += 1 / len(cycle)
+                divisor += 1
+            completed, cycle = randomWalkUntilCycle2(G, tail, head)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['weightedCycle'] += 1 / len(cycle)
+                divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['weightedCycle'] /= divisor
     return True
 
 
@@ -214,7 +233,7 @@ def cycleStudy(G, n):
     inGroupCount = 0
     outGroupCount = 0
     for _ in range(n):
-        cycle = randomWalkUntilCycle(G, cycle=True)
+        cycle = randomWalkUntilCycle2(G)
         group = G.nodes[cycle[0]]['community']
         inGroup = True
         for node in cycle:
@@ -346,3 +365,61 @@ def groupsToList(n, communities):
         for val in communities[group]:
             groupFormat[int(val)] = group
     return groupFormat
+
+
+def inCommunityLabel(G):
+    nx.set_edge_attributes(G, values=False, name="in_comm")
+    for head, tail in G.edges:
+        if G.nodes[head]['community'] == G.nodes[tail]['community']:
+            G[head][tail]['in_comm'] = True
+    return G
+
+
+def graphNodesToCSV(G, file):
+    string = "csvNodes" + "/" + file + ".csv"
+    f = open(string, "w")
+    with open(string, newline='') as csvfile:
+        fieldnames = ['community', '']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    writer.writeheader()
+    writer.writerow({'first_name': 'Baked', 'last_name': 'Beans'})
+    writer.writerow({'first_name': 'Lovely', 'last_name': 'Spam'})
+    writer.writerow({'first_name': 'Wonderful', 'last_name': 'Spam'})
+
+    nx.write_weighted_edgelist(G, string)
+
+
+def runAllWeightings():
+    print()
+
+
+def GraphToCSV(G, file):
+    inCommunityLabel(G)
+    unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
+    uniformRNBRW(G, 100)
+    uniformGroups = nx.algorithms.community.louvain_communities(G, 'uniform', seed=100)
+    RNBRW(G, 200*len(G.edges))
+    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
+    CNBRW(G, t=100)
+    cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
+    weightedCNBRW(G, t=100)
+    weightedCycleGroups = nx.algorithms.community.louvain_communities(G, 'weightedCycle', seed=100)
+    # graphNodesToCSV(G, file)
+    graphEdgesToCSV(G, file)
+
+
+def graphEdgesToCSV(G, file):
+    string = "csvEdges" + "/" + file + ".csv"
+    if not os.access(string, 0):
+        print("Error: Failed to access CSV file")
+    with open(string, 'w') as csvfile:
+        fieldnames = ['in_comm', 'rnbrw', 'uniform', 'cycle', 'weightedCycle']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for head, tail in G.edges:
+            writer.writerow({'in_comm': G[head][tail]['in_comm'],
+                             'rnbrw': G[head][tail]['rnbrw'],
+                             'uniform': G[head][tail]['uniform'],
+                             'cycle': G[head][tail]['cycle'],
+                             'weightedCycle': G[head][tail]['weightedCycle']})

@@ -38,14 +38,14 @@ def writeAll(G, file):
 def readGraph(file):
     """ Return networkx graph G from stored file """
     if not os.access(file, 0):
-        print("Error: Failed to access file")
+        print("Error: Failed to access graph file")
     return nx.read_weighted_edgelist(file, nodetype=int)
 
 
 def readCommunity(file):
     """Returns community data from stored file"""
     if not os.access(file, 0):
-        print("Error: Failed to access file")
+        print("Error: Failed to access community file")
     f = open(file)
     data = json.load(f)
     newData = [set([int(i) for i in group]) for group in data]
@@ -54,6 +54,8 @@ def readCommunity(file):
 
 def readAll(file):
     """Automatically loads Graph and Community data from stored files"""
+    if str(file[-4]) != ".txt":
+        file += ".txt"
     G = readGraph("graphs/"+file)
     groups = readCommunity("communities/"+file)
     for group in groups:
