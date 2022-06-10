@@ -94,37 +94,23 @@ def randomWalkUntilCycle(G):
     return True, tail, head
 
 
-def RNBRW(G, n):
-    # Update the graph edge attributes for each retraced edge found
-    i = 0
-    divisor = len(G.edges) * .01
-    nx.set_edge_attributes(G, values=0.01, name='rnbrw')
-    while i < n:
-        completed_cycle, tail, head = randomWalkUntilCycle(G)
-        if completed_cycle:
-            G[tail][head]['rnbrw'] += 1
-            i += 1
-    for head, tail in G.edges:
-        G[head][tail]['rnbrw'] /= (divisor + n)
-    return True
-
-
-def uniformRNBRW(G, t):
+def RNBRW(G, t):
+    #
     initial = .01
     divisor = len(G.edges) * initial
-    nx.set_edge_attributes(G, values=initial, name='uniform')
+    nx.set_edge_attributes(G, values=initial, name='rnbrw')
     for head, tail in G.edges:
         for trial in range(t):
             complete, one, two = randomWalkFromEdge(G, head, tail)
             if complete:
-                G[one][two]['uniform'] += 1
+                G[one][two]['rnbrw'] += 1
                 divisor += 1
             complete, one, two = randomWalkFromEdge(G, tail, head)
             if complete:
-                G[one][two]['uniform'] += 1
+                G[one][two]['rnbrw'] += 1
                 divisor += 1
     for head, tail in G.edges:
-        G[head][tail]['uniform'] /= divisor
+        G[head][tail]['rnbrw'] /= divisor
     return True
 
 
@@ -223,55 +209,32 @@ def weightedCNBRW(G, t=1):
     return True
 
 
-def cycleStudy(G, n):
+def hybridRNBRW(G, t=1):
     """
-    Test how often cycles occur completely within communities or across communities
-    Depends on LFR benchmark labels for communities
+    Update the graph edge attributes for each edge found in a cycle
+    Update by each edge by reciprocal cycle length
+    Retracing edge is also given a bonus weight
     """
-    inGroupCycleLength = {}
-    outGroupCycleLength = {}
-    inGroupCount = 0
-    outGroupCount = 0
-    for _ in range(n):
-        cycle = randomWalkUntilCycle2(G)
-        group = G.nodes[cycle[0]]['community']
-        inGroup = True
-        for node in cycle:
-            if node not in group:
-                inGroup = False
-                outGroupCount += 1
-                if len(cycle) in outGroupCycleLength:
-                    outGroupCycleLength[len(cycle)] += 1
-                else:
-                    outGroupCycleLength[len(cycle)] = 1
-                break
-        if inGroup:
-            inGroupCount += 1
-            if len(cycle) in inGroupCycleLength:
-                inGroupCycleLength[len(cycle)] += 1
-            else:
-                inGroupCycleLength[len(cycle)] = 1
-    print("inGroupCount", inGroupCount)
-    print("outGroupCount", outGroupCount)
-    return [inGroupCycleLength, outGroupCycleLength]
-
-
-def retraceStudy(G, n):
-    """
-    Test how often retraced edges occur completely within communities or across communities
-    Depends on LFR benchmark labels for communities
-    """
-    inGroupCount = 0
-    outGroupCount = 0
-    for _ in range(n):
-        renewal = randomWalkUntilCycle(G)
-        if G.nodes[renewal[0]] == G.nodes[renewal[1]]:
-            inGroupCount += 1
-        else:
-            outGroupCount += 1
-    print("inGroupCount", inGroupCount)
-    print("outGroupCount", outGroupCount)
-    return [inGroupCount, outGroupCount]
+    initial = .01
+    divisor = len(G.edges) * initial
+    nx.set_edge_attributes(G, values=initial, name='hybrid')
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, cycle = randomWalkUntilCycle2(G, head, tail)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['hybrid'] += 1 / len(cycle)
+                G[cycle[0]][cycle[-1]]['hybrid'] += 1
+                divisor += 2
+            completed, cycle = randomWalkUntilCycle2(G, tail, head)
+            if completed:
+                for node in range(len(cycle)):
+                    G[cycle[node]][cycle[node-1]]['hybrid'] += 1 / len(cycle)
+                G[cycle[0]][cycle[-1]]['hybrid'] += 1
+                divisor += 2
+    for head, tail in G.edges:
+        G[head][tail]['hybrid'] /= divisor
+    return True
 
 
 def communityBuilder(nodes, group_count, p_in, p_out):
@@ -394,32 +357,32 @@ def runAllWeightings():
     print()
 
 
-def GraphToCSV(G, file):
+def GraphToCSV(G, file, t=1):
     inCommunityLabel(G)
     unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
-    uniformRNBRW(G, 100)
-    uniformGroups = nx.algorithms.community.louvain_communities(G, 'uniform', seed=100)
-    RNBRW(G, 200*len(G.edges))
+    RNBRW(G, t=t)
     rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
-    CNBRW(G, t=100)
+    CNBRW(G, t=t)
     cycleGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
-    weightedCNBRW(G, t=100)
+    weightedCNBRW(G, t=t)
     weightedCycleGroups = nx.algorithms.community.louvain_communities(G, 'weightedCycle', seed=100)
+    hybridRNBRW(G, t=t)
+    hybridGroups = nx.algorithms.community.louvain_communities(G, 'hybrid', seed=100)
     # graphNodesToCSV(G, file)
-    graphEdgesToCSV(G, file)
+    graphEdgesToCSV(G, file, t)
 
 
-def graphEdgesToCSV(G, file):
-    string = "csvEdges" + "/" + file + ".csv"
+def graphEdgesToCSV(G, file, t):
+    string = "csvEdges" + "/" + file + "_" + str(t) +"m.csv"
     if not os.access(string, 0):
         print("Error: Failed to access CSV file")
     with open(string, 'w') as csvfile:
-        fieldnames = ['in_comm', 'rnbrw', 'uniform', 'cycle', 'weightedCycle']
+        fieldnames = ['in_comm', 'rnbrw', 'cycle', 'weightedCycle', 'hybrid']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for head, tail in G.edges:
             writer.writerow({'in_comm': G[head][tail]['in_comm'],
                              'rnbrw': G[head][tail]['rnbrw'],
-                             'uniform': G[head][tail]['uniform'],
                              'cycle': G[head][tail]['cycle'],
-                             'weightedCycle': G[head][tail]['weightedCycle']})
+                             'weightedCycle': G[head][tail]['weightedCycle'],
+                             'hybrid': G[head][tail]['hybrid']})

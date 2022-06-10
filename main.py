@@ -72,20 +72,10 @@ def mainRetraceStudy(n=1000):
     # print("NMI", NMI(n, communityList, unweightedGroups))
     print("adjNMI", adjustNMI(n, communityList, unweightedGroups))
 
-    # CLASSIFY COMMUNITIES by UNIFORM RNBRW
-    print("\n UNIFORM RNBRW")
-    start = time()
-    uniformRNBRW(G, 10)
-    rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'uniform', seed=100)
-    print("RNBRW time m", time() - start)
-    print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
-    #print("NMI", NMI(n, communityList, rnbrwGroups))
-    print("adjNMI", adjustNMI(n, communityList, rnbrwGroups))
-
     # CLASSIFY COMMUNITIES by RNBRW
     print("\n RNBRW")
     start = time()
-    RNBRW(G, 2*len(G.edges))
+    RNBRW(G, t=10)
     rnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
     print("RNBRW time m", time() - start)
     print("Modularity", nx.algorithms.community.modularity(G, rnbrwGroups))
@@ -111,12 +101,6 @@ def mainRetraceStudy(n=1000):
     print("Modularity", nx.algorithms.community.modularity(G, weightedCycleGroups))
     #print("NMI", NMI(n, communityList, weightedCycleGroups))
     print("adjNMI", adjustNMI(n, communityList, weightedCycleGroups))
-
-
-def mainCycleStudy(n):
-    G = LFRBenchmark(n)
-    cycleData = cycleStudy(G, 1000)
-    print(cycleData)
 
 
 def createGraphs():
@@ -153,7 +137,7 @@ def createGraphPackage(c=1):
 
 def testCSVGraph():
     G = createGraphFiles.readAll("7_1000_3")
-    GraphToCSV(G, "7_1000_3")
+    GraphToCSV(G, "7_1000_3", t=100)
 
 
 # mainRetraceStudy(1000)
