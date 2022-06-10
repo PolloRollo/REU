@@ -65,6 +65,57 @@ def readAll(file):
     return G
 
 
+def readDiGraph(file):
+    """ Returns networkx DiGraph from generated network file """
+    if not os.access(file, 0):
+        print("Error: Failed to access file")
+    f = open(file, "r")
+    G = nx.DiGraph()
+
+    for line in f:
+        source, target = line.split()
+        source = int(source)
+        target = int(target)
+        if source not in G.nodes:
+            G.add_node(source)
+        if target not in G.nodes:
+            G.add_node(target)
+        G.add_edge(source, target)
+
+    f.close()
+
+    return G
 
 
+def readDiCommunities(file):
+    """ Returns list of communities from generated file """
+    if not os.access(file, 0):
+        print("Error: Failed to access file")
+    f = open(file, "r")
 
+    communities = dict()
+
+    for line in f:
+        node, community = line.split()
+        node = int(node)
+        community = int(community)
+        if community not in communities.keys():
+            communities.update({community: set()})
+        communities[community].add(node)
+
+    f.close()
+
+    return list(communities.values())
+
+
+def readDiAll(file):
+    if str(file[-4]) != ".dat":
+        file += ".dat"
+    G = readDiGraph("digraphs/networks/"+file)
+    groups = readDiCommunities("digraphs/communities/"+file)
+
+    for group in groups:
+        community = group
+        for node in group:
+            G.add_node(int(node), community=community)
+    return G

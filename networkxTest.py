@@ -386,3 +386,133 @@ def graphEdgesToCSV(G, file, t):
                              'cycle': G[head][tail]['cycle'],
                              'weightedCycle': G[head][tail]['weightedCycle'],
                              'hybrid': G[head][tail]['hybrid']})
+
+
+def digraphLabeling(G):
+    storage = [[] for node in range(len(G.nodes) + 1)]
+    for node in range(1, len(G.nodes)):
+        for edge in list(G[node]):
+            # print(edge)
+            storage[edge].append(node)
+    for node in range(1, len(storage)):
+        G.nodes[node]['in_edge'] = storage[node]
+    # print(G.nodes[1])
+    print()
+
+
+def directedRandomWalkUntilCycle(G, head, tail):
+    """
+    Parameters
+    ----------
+    G : directed graph as an input
+    x : the node from which the directed edge is coming from
+    y : the node which the directed edge is going to
+
+    Returns
+    -------
+    retraced_edge : the two nodes which the directed edge that forms a cycle in the order of the directed edge
+    """
+    path_walked = {tail}
+    while head not in path_walked:
+        neighbors = list(G.neighbors(head))
+        # print(neighbors)
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if len(neighbors) == 0:
+            return False, head, tail
+        path_walked.add(tail)
+        tail = head
+        head = random.choice(neighbors)
+    return True, head, tail
+
+
+def DRNBRW(G, t):
+    #
+    initial = .01
+    divisor = len(G.edges) * initial
+    nx.set_edge_attributes(G, values=initial, name='directed_rnbrw')
+    for head, tail in G.edges:
+        for trial in range(t):
+            complete, head, tail = directedRandomWalkUntilCycle(G, head, tail)
+            if complete:
+                G[tail][head]['directed_rnbrw'] += 1
+                divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['directed_rnbrw'] /= divisor
+        # print(G[head][tail]['directed_rnbrw'])
+    return True
+
+
+def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
+    """
+    Beginning with directed graph G, we choose a random edge in G.
+    Since G is directed, we randomly decide a head and tail for the edge.
+    We then randomly walk, without backtracking until we revisit a node
+    OR we visit a node with no edges (besides backtracking).
+
+    We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
+    """
+    path = [tail]
+    # Random walk until cycle
+    while head not in path:
+        if direction < 0:
+            neighbors = list(G[head])
+        else:
+            neighbors = list(G.nodes[head]['in_edge'])
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if head in neighbors:
+            neighbors.remove(head)
+        if len(neighbors) == 0:
+            return False, head, tail, direction
+        path.append(head)
+        head, tail = random.choice(neighbors), head
+        direction *= -1
+    # Return statements (retraced edge or cycle list)
+    # start = path.index(head)
+    # cycle = path[start:]
+    return True, head, tail, direction
+
+
+def ZRNBRW(G, t=1):
+    # Update the graph edge attributes for each edge found in a cycle
+    initial = .01
+    divisor = 0
+    nx.set_edge_attributes(G, values=initial, name='zigzag')
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, head, tail, d = randomWalkUntilCycleZigZag(G, head, tail)
+            if completed:
+                if d > 0:
+                    G[tail][head]['zigzag'] += 1
+                else:
+                    G[head][tail]['zigzag'] += 1
+                divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['zigzag'] /= divisor
+    return True
+
+
+def directedGraphToCSV(G, file, t=1):
+    inCommunityLabel(G)
+    # unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
+    DRNBRW(G, t=t)
+    # drnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
+    ZRNBRW(G, t=t)
+    # zigzagGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
+    # graphNodesToCSV(G, file)
+    directedGraphEdgesToCSV(G, file, t)
+
+
+def directedGraphEdgesToCSV(G, file, t):
+    string = "csvEdgesDirected" + "/" + file + "_" + str(t) +"m.csv"
+    if not os.access(string, 0):
+        print("Error: Failed to access CSV file")
+    with open(string, 'w') as csvfile:
+        fieldnames = ['in_comm', 'directed_rnbrw', 'zigzag']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for head, tail in G.edges:
+            writer.writerow({'in_comm': G[head][tail]['in_comm'],
+                'directed_rnbrw': G[head][tail]['directed_rnbrw'],
+                             'zigzag': G[head][tail]['zigzag']})

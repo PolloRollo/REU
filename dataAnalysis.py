@@ -7,15 +7,14 @@ from scipy import stats
 
 def compareAlgorithms(file):
     df = pd.read_csv(file)
-    a = sns.pairplot(df, hue="in_comm", diag_kind="hist", corner=True)
-    a.fig.suptitle("Algorithm Comparison: 100m iterations", fontsize=24)
+    a = sns.pairplot(df, hue="in_comm", diag_kind="hist")
+    a.fig.suptitle("Algorithm Comparison: 10m iterations", fontsize=18)
     handles = a._legend_data.values()
     labels = ["Across-Community Edge", "In-Community Edge"]
     sns.move_legend(a, (2, 2))
     a.set(xlim=(0, .002), ylim=(0, .002))
-    a.fig.legend(handles=handles, labels=labels, loc=(.6, .6), ncol=1)
+    a.fig.legend(handles=handles, labels=labels, loc="upper left", ncol=1)
     plt.show()
-
 
 
 def compareWeights(file):
@@ -59,9 +58,30 @@ def wassersteinDistance():
     print(stats.wasserstein_distance(df100_in['weightedCycle'], df100_out['weightedCycle']))
 
 
+def directedCompareAlgorithms(file):
+    df = pd.read_csv(file)
+    a = sns.pairplot(df, hue="in_comm", diag_kind="hist")
+    a.fig.suptitle("Algorithm Comparison: 10m iterations", fontsize=18)
+    handles = a._legend_data.values()
+    labels = ["Across-Community Edge", "In-Community Edge"]
+    sns.move_legend(a, (2, 2))
+    # a.set(xlim=(0, .002), ylim=(0, .002))
+    a.fig.legend(handles=handles, labels=labels, loc='upper left', ncol=1)
+    plt.show()
 
 
-compareAlgorithms("csvEdges/7_1000_3_100m.csv")
-#compareWeights("csvEdges/7_1000_3_100m.csv")
+def directedCompareWeights(file):
+    df = pd.read_csv(file)
+    a = sns.histplot(df, x='directed_rnbrw', hue='in_comm', multiple='layer')
+    a.set_title("Cycle with 10m iterations")
+    a.set_xlabel("Estimated Retracing Probability")
+    a.set_ylabel("Count")
+    a.legend(["In Community Edge", "Across Community Edge"])
+    # a.set(title='Retracing Probability')
+    plt.show()
+
+#compareAlgorithms("csvEdges/7_1000_3_100m.csv")
+# compareWeights("csvEdges/7_1000_3_100m.csv")
 # wassersteinDistance()
-
+directedCompareAlgorithms("csvEdgesDirected/1ln_10000_3_10m.csv")
+directedCompareWeights("csvEdgesDirected/1ln_10000_3_10m.csv")

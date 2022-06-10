@@ -140,6 +140,17 @@ def testCSVGraph():
     GraphToCSV(G, "7_1000_3", t=100)
 
 
+def digraphTest(file, t=10):
+    G = createGraphFiles.readDiAll(file)
+    communities = identifyLFRCommunities(G)
+    print("Community Count",len(communities))
+    digraphLabeling(G)
+    DRNBRW(G, t)
+    ZRNBRW(G, t)
+    directedGraphToCSV(G, file, t=t)
+
+
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
-testCSVGraph()
+# testCSVGraph()
+digraphTest("1ln_1000_3")
