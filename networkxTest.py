@@ -452,7 +452,7 @@ def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
 
     We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
     """
-    path = [tail]
+    path = {tail}
     # Random walk until cycle
     while head not in path:
         if direction < 0:
@@ -465,12 +465,10 @@ def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
             neighbors.remove(head)
         if len(neighbors) == 0:
             return False, head, tail, direction
-        path.append(head)
+        path.add(head)
         head, tail = random.choice(neighbors), head
         direction *= -1
     # Return statements (retraced edge or cycle list)
-    # start = path.index(head)
-    # cycle = path[start:]
     return True, head, tail, direction
 
 
@@ -493,12 +491,124 @@ def ZRNBRW(G, t=1):
     return True
 
 
+def ZCNBRW(G, t=1):
+    # Update the graph edge attributes for each edge found in a cycle
+    initial = .01
+    divisor = 0
+    nx.set_edge_attributes(G, values=initial, name='zigzag_cycle')
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, cycle, d = randomWalkUntilCycleZigZag2(G, head, tail)
+            if completed:
+                divisor += zigzagMethod(G, cycle, d, 'zigzag_cycle')
+            completed, cycle, d = randomWalkUntilCycleZigZag2(G, tail, head, direction=-1)
+            if completed:
+                divisor += zigzagMethod(G, cycle, d, 'zigzag_cycle')
+    for head, tail in G.edges:
+        G[head][tail]['zigzag_cycle'] /= divisor
+    return True
+
+
+def zigzagMethod(G, cycle, d, string):
+    if d < 0:
+        G[cycle[-1]][cycle[0]][string] += 1
+    else:
+        G[cycle[0]][cycle[-1]][string] += 1
+    offset = (d+1) // 2
+    if len(cycle) % 2 == 0:
+        for node in range(0, len(cycle), 2):
+            if node < len(cycle) - 2:
+                G[cycle[node+1-offset]][cycle[node+offset]][string] += 1
+                G[cycle[node+1+offset]][cycle[node+2-offset]][string] += 1
+            elif node == len(cycle) - 2:
+                G[cycle[node+1-offset]][cycle[node+offset]][string] += 1
+    else:
+        for node in range(0, len(cycle), 2):
+            if node < len(cycle) - 2:
+                G[cycle[node+offset]][cycle[node+1-offset]][string] += 1
+                G[cycle[node+2-offset]][cycle[node+1+offset]][string] += 1
+            elif node == len(cycle) - 2:
+                G[cycle[node+1]][cycle[node]][string] += 1
+    return len(cycle)
+
+
+def randomWalkUntilCycleZigZag2(G, head, tail, direction=1):
+    """
+    Beginning with directed graph G, we choose a random edge in G.
+    Since G is directed, we randomly decide a head and tail for the edge.
+    We then randomly walk, without backtracking until we revisit a node
+    OR we visit a node with no edges (besides backtracking).
+
+    We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
+    """
+    path = [tail]
+    # Random walk until cycle
+    while head not in path:
+        direction *= -1
+        if direction < 0:
+            neighbors = list(G[head])
+        else:
+            neighbors = list(G.nodes[head]['in_edge'])
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if head in neighbors:
+            neighbors.remove(head)
+        if len(neighbors) == 0:
+            return False, path, direction
+        path.append(head)
+        head, tail = random.choice(neighbors), head
+    # Return statements (retraced edge or cycle list)
+    start = path.index(head)
+    cycle = path[start:]
+    return True, cycle, direction
+
+
+def weightedZCNBRW(G, t=1):
+    # Update the graph edge attributes for each edge found in a cycle
+    initial = .01
+    divisor = 0
+    nx.set_edge_attributes(G, values=initial, name='weighted_zigzag')
+    for head, tail in G.edges:
+        for trial in range(t):
+            completed, cycle, d = randomWalkUntilCycleZigZag2(G, head, tail)
+            if completed:
+                if d < 0:
+                    G[cycle[-1]][cycle[0]]['zigzag_cycle'] += 1
+                else:
+                    G[cycle[0]][cycle[-1]]['zigzag_cycle'] += 1
+                offset = (d+1) // 2
+                if len(cycle) % 2 == 0:
+                    for node in range(0, len(cycle), 2):
+                        if node < len(cycle) - 2:
+                            #print(cycle, len(cycle), d)
+                            #print(G.nodes[cycle[node]]['in_edge'])
+                            G[cycle[node+1-offset]][cycle[node+offset]]['weighted_zigzag'] += 1 / len(cycle)
+                            G[cycle[node+1+offset]][cycle[node+2-offset]]['weighted_zigzag'] += 1 / len(cycle)
+                        elif node == len(cycle) - 2:
+                            G[cycle[node+1-offset]][cycle[node+offset]]['weighted_zigzag'] += 1 / len(cycle)
+                else:
+                    for node in range(0, len(cycle), 2):
+                        if node < len(cycle) - 2:
+                            #print(cycle, d)
+                            #print(G.nodes[cycle[node]]['in_edge'])
+                            G[cycle[node+offset]][cycle[node+1-offset]]['weighted_zigzag'] += 1 / len(cycle)
+                            G[cycle[node+2-offset]][cycle[node+1+offset]]['weighted_zigzag'] += 1 / len(cycle)
+                        elif node == len(cycle) - 2:
+                            G[cycle[node+1]][cycle[node]]['weighted_zigzag'] += 1 / len(cycle)
+                divisor += 1
+    for head, tail in G.edges:
+        G[head][tail]['weighted_zigzag'] /= divisor
+    return True
+
+
 def directedGraphToCSV(G, file, t=1):
     inCommunityLabel(G)
     # unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
     DRNBRW(G, t=t)
     # drnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
     ZRNBRW(G, t=t)
+    ZCNBRW(G, t=t)
+    weightedZCNBRW(G, t=t)
     # zigzagGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
     # graphNodesToCSV(G, file)
     directedGraphEdgesToCSV(G, file, t)
@@ -509,10 +619,13 @@ def directedGraphEdgesToCSV(G, file, t):
     if not os.access(string, 0):
         print("Error: Failed to access CSV file")
     with open(string, 'w') as csvfile:
-        fieldnames = ['in_comm', 'directed_rnbrw', 'zigzag']
+        fieldnames = ['in_comm', 'directed_rnbrw', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for head, tail in G.edges:
             writer.writerow({'in_comm': G[head][tail]['in_comm'],
-                'directed_rnbrw': G[head][tail]['directed_rnbrw'],
-                             'zigzag': G[head][tail]['zigzag']})
+                             'directed_rnbrw': G[head][tail]['directed_rnbrw'],
+                             'zigzag': G[head][tail]['zigzag'],
+                             'zigzag_cycle': G[head][tail]['zigzag_cycle'],
+                             'weighted_zigzag': G[head][tail]['weighted_zigzag']})
+
