@@ -152,4 +152,4 @@ def digraphTest(file, t=10):
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
-digraphTest("1ln_10000_3", t=10)
+digraphTest("1ln_10000_3", t=1)
