@@ -135,15 +135,15 @@ def createGraphPackage(c=1):
             print(n, mu)
 
 
-def testCSVGraph():
-    G = createGraphFiles.readAll("7_1000_3")
-    GraphToCSV(G, "7_1000_3", t=100)
+def testCSVGraph(file, t=10):
+    G = createGraphFiles.readAll(file)
+    GraphToCSV(G, file, t=100)
 
 
 def digraphTest(file, t=10):
     G = createGraphFiles.readDiAll(file)
     communities = identifyLFRCommunities(G)
-    print("Community Count",len(communities))
+    print("Community Count", len(communities))
     digraphLabeling(G)
     directedGraphToCSV(G, file, t=t)
 
@@ -151,4 +151,5 @@ def digraphTest(file, t=10):
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
-digraphTest("1ln_10000_3", t=1)
+# testCSVGraph("7_1000_3", 100)
+digraphTest("1ln_10000_3", t=10)

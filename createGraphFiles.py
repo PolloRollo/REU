@@ -56,7 +56,7 @@ def readAll(file):
     """Automatically loads Graph and Community data from stored files"""
     if str(file[-4]) != ".txt":
         file += ".txt"
-    G = readGraph("graphs/"+file)
+    G = readGraph("graphs/" + file)
     groups = readCommunity("communities/"+file)
     for group in groups:
         community = group

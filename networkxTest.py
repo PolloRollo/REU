@@ -164,8 +164,8 @@ def randomWalkUntilCycle2(G, head, tail):
 
 def CNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
-    initial = .01
-    divisor = 0
+    initial = -t
+    divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='cycle')
     for head, tail in G.edges:
         for trial in range(t):
@@ -189,7 +189,7 @@ def weightedCNBRW(G, t=1):
     Update the graph edge attributes for each edge found in a cycle
     Update by each edge by reciprocal cycle length
     """
-    initial = .01
+    initial = -t
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='weightedCycle')
     for head, tail in G.edges:
@@ -215,7 +215,7 @@ def hybridRNBRW(G, t=1):
     Update by each edge by reciprocal cycle length
     Retracing edge is also given a bonus weight
     """
-    initial = .01
+    initial = -t
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='hybrid')
     for head, tail in G.edges:
@@ -427,7 +427,8 @@ def directedRandomWalkUntilCycle(G, head, tail):
 
 
 def DRNBRW(G, t):
-    #
+    # A naive translation of RNBRW to directed graphs,
+    # We follow directed paths until they reach a cycle or a dead enc
     initial = .01
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='directed_rnbrw')
@@ -439,7 +440,6 @@ def DRNBRW(G, t):
                 divisor += 1
     for head, tail in G.edges:
         G[head][tail]['directed_rnbrw'] /= divisor
-        # print(G[head][tail]['directed_rnbrw'])
     return True
 
 
@@ -494,7 +494,7 @@ def ZRNBRW(G, t=1):
 def ZCNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
     initial = .01
-    divisor = 0
+    divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='zigzag_cycle')
     for head, tail in G.edges:
         for trial in range(t):
@@ -573,15 +573,13 @@ def weightedZCNBRW(G, t=1):
             completed, cycle, d = randomWalkUntilCycleZigZag2(G, head, tail)
             if completed:
                 if d < 0:
-                    G[cycle[-1]][cycle[0]]['zigzag_cycle'] += 1
+                    G[cycle[-1]][cycle[0]]['weighted_zigzag'] += 1
                 else:
-                    G[cycle[0]][cycle[-1]]['zigzag_cycle'] += 1
+                    G[cycle[0]][cycle[-1]]['weighted_zigzag'] += 1
                 offset = (d+1) // 2
                 if len(cycle) % 2 == 0:
                     for node in range(0, len(cycle), 2):
                         if node < len(cycle) - 2:
-                            #print(cycle, len(cycle), d)
-                            #print(G.nodes[cycle[node]]['in_edge'])
                             G[cycle[node+1-offset]][cycle[node+offset]]['weighted_zigzag'] += 1 / len(cycle)
                             G[cycle[node+1+offset]][cycle[node+2-offset]]['weighted_zigzag'] += 1 / len(cycle)
                         elif node == len(cycle) - 2:
@@ -589,8 +587,6 @@ def weightedZCNBRW(G, t=1):
                 else:
                     for node in range(0, len(cycle), 2):
                         if node < len(cycle) - 2:
-                            #print(cycle, d)
-                            #print(G.nodes[cycle[node]]['in_edge'])
                             G[cycle[node+offset]][cycle[node+1-offset]]['weighted_zigzag'] += 1 / len(cycle)
                             G[cycle[node+2-offset]][cycle[node+1+offset]]['weighted_zigzag'] += 1 / len(cycle)
                         elif node == len(cycle) - 2:

@@ -8,7 +8,7 @@ from scipy import stats
 def compareAlgorithms(file):
     df = pd.read_csv(file)
     a = sns.pairplot(df, hue="in_comm", diag_kind="hist")
-    a.fig.suptitle("Algorithm Comparison: 10m iterations", fontsize=18)
+    a.fig.suptitle("Algorithm Comparison: 100m iterations", fontsize=18)
     handles = a._legend_data.values()
     labels = ["Across-Community Edge", "In-Community Edge"]
     sns.move_legend(a, (2, 2))
@@ -73,7 +73,7 @@ def directedCompareAlgorithms(file):
 def directedCompareWeights(file, x):
     df = pd.read_csv(file)
     a = sns.histplot(df, x=x, hue='in_comm', multiple='layer')
-    a.set_title(str(x) + "10000 nodes with 1m iterations")
+    a.set_title(str(x) + "10000 nodes with 10m iterations")
     a.set_xlabel("Estimated Retracing Probability")
     a.set_ylabel("Count")
     a.legend(["In Community Edge", "Across Community Edge"])
@@ -92,4 +92,6 @@ def createAllDirected(file):
     directedCompareWeights(file, "weighted_zigzag")
 
 
-createAllDirected("csvEdgesDirected/1ln_10000_3_1m.csv")
+
+# compareAlgorithms("csvEdges/7_1000_3_100m.csv")
+createAllDirected("csvEdgesDirected/1ln_10000_3_10m.csv")
