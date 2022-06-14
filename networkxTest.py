@@ -388,11 +388,9 @@ def digraphLabeling(G):
     storage = [[] for node in range(len(G.nodes) + 1)]
     for node in range(1, len(G.nodes)):
         for edge in list(G[node]):
-            # print(edge)
             storage[edge].append(node)
     for node in range(1, len(storage)):
         G.nodes[node]['in_edge'] = storage[node]
-    # print(G.nodes[1])
     print()
 
 
@@ -436,15 +434,18 @@ def DRNBRW(G, t):
     initial = .01
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='directed_rnbrw')
+    failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             complete, head, tail = directedRandomWalkUntilCycle(G, head, tail)
             if complete:
                 G[tail][head]['directed_rnbrw'] += 1
                 divisor += 1
+            else:
+                failed += 1
     for head, tail in G.edges:
         G[head][tail]['directed_rnbrw'] /= divisor
-    # print("directed RNBRW", divisor)
+    # print("directed RNBRW", failed)
     return True
 
 
@@ -460,14 +461,19 @@ def retraceDRNBRW(G, t):
     initial = .01
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='directed_retrace')
+    failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             complete, head, tail = directedRandomWalkUntilCycle(G, head, tail, True)
             if complete:
                 G[tail][head]['directed_retrace'] += 1
                 divisor += 1
+            else:
+                failed += 1
     for head, tail in G.edges:
         G[head][tail]['directed_retrace'] /= divisor
+    # print("retraced RNBRW", failed)
+    # print(len(G.edges))
     return True
 
 
@@ -505,6 +511,7 @@ def ZRNBRW(G, t=1):
     initial = .01
     divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='zigzag')
+    failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             completed, head, tail, d = randomWalkUntilCycleZigZag(G, head, tail)
@@ -514,9 +521,11 @@ def ZRNBRW(G, t=1):
                 else:
                     G[head][tail]['zigzag'] += 1
                 divisor += 1
+            else:
+                failed += 1
     for head, tail in G.edges:
         G[head][tail]['zigzag'] /= divisor
-    # print("zigzag", divisor)
+    # print("zigzag", failed)
     return True
 
 

@@ -143,13 +143,35 @@ def testCSVGraph(file, t=10):
 def digraphTest(file, t=10):
     G = createGraphFiles.readDiAll(file)
     communities = identifyLFRCommunities(G)
-    print("Community Count", len(communities))
+    print(file, "Community Count", len(communities))
     digraphLabeling(G)
     directedGraphToCSV(G, file, t=t)
+
+
+def createAllEdgeCSVs(t=1):
+    files = ['1ln_500_1', '2ln_500_1', '3ln_500_1',
+             '1ln_500_2', '2ln_500_2', '3ln_500_2',
+             '1ln_500_3', '2ln_500_3', '3ln_500_3',
+             '1ln_500_4', '2ln_500_4', '3ln_500_4',
+             '1ln_1000_1', '2ln_1000_1', '3ln_1000_1',
+             '1ln_1000_2', '2ln_1000_2', '3ln_1000_2',
+             '1ln_1000_3', '2ln_1000_3', '3ln_1000_3',
+             '1ln_1000_4', '2ln_1000_4', '3ln_1000_4',
+             '1ln_5000_1', '2ln_5000_1', '3ln_5000_1',
+             '1ln_5000_2', '2ln_5000_2', '3ln_5000_2',
+             '1ln_5000_3', '2ln_5000_3', '3ln_5000_3',
+             '1ln_5000_4', '2ln_5000_4', '3ln_5000_4',
+             '1ln_10000_1', '2ln_10000_1', '3ln_10000_1',
+             '1ln_10000_2', '2ln_10000_2', '3ln_10000_2',
+             '1ln_10000_3', '2ln_10000_3', '3ln_10000_3',
+             '1ln_10000_4', '2ln_10000_4', '3ln_10000_4']
+    for file in files:
+        digraphTest(file, t)
 
 
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
-digraphTest("1ln_10000_3", t=1)
+# digraphTest("1ln_1000_3", t=1)
+createAllEdgeCSVs(t=10)

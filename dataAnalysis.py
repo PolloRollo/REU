@@ -8,7 +8,7 @@ from scipy import stats
 def compareAlgorithms(file):
     df = pd.read_csv(file)
     a = sns.pairplot(df, hue="in_comm", diag_kind="hist")
-    a.fig.suptitle("Algorithm Comparison: 100m iterations", fontsize=18)
+    a.fig.suptitle("Algorithm Comparison: 10m iterations", fontsize=18)
     handles = a._legend_data.values()
     labels = ["Across-Community Edge", "In-Community Edge"]
     sns.move_legend(a, (2, 2))
@@ -17,10 +17,10 @@ def compareAlgorithms(file):
     plt.show()
 
 
-def compareWeights(file):
+def compareWeights(file, x):
     df = pd.read_csv(file)
-    a = sns.histplot(df, x='cycle', hue='in_comm', multiple='layer')
-    a.set_title("Cycle with 100m iterations")
+    a = sns.histplot(df, x=x, hue='in_comm', multiple='dodge')
+    a.set_title(x + " 1000 nodes with 10m iterations")
     a.set_xlabel("Estimated Retracing Probability")
     a.set_ylabel("Count")
     a.legend(["In Community Edge", "Across Community Edge"])
@@ -29,11 +29,11 @@ def compareWeights(file):
 
 
 def createAll(file):
-    directedCompareAlgorithms(file)
-    directedCompareWeights(file, "rnbrw")
-    directedCompareWeights(file, "cycle")
-    directedCompareWeights(file, "weighted_cycle")
-    directedCompareWeights(file, "hybrid")
+    compareAlgorithms(file)
+    compareWeights(file, "rnbrw")
+    compareWeights(file, "cycle")
+    compareWeights(file, "weightedCycle")
+    compareWeights(file, "hybrid")
 
 
 def wassersteinDistance():
@@ -66,10 +66,17 @@ def wassersteinDistance():
     print(stats.wasserstein_distance(df100_in['weightedCycle'], df100_out['weightedCycle']))
 
 
+def wasserstein(file, method):
+    df = pd.read_csv(file)
+    df_in = df[df['in_comm'] == True]
+    df_out = df[df['in_comm'] == False]
+    print(file, method, stats.wasserstein_distance(df_in[method], df_out[method]))
+
+
 def directedCompareAlgorithms(file):
     df = pd.read_csv(file)
     a = sns.pairplot(df, hue="in_comm", diag_kind="hist")
-    a.fig.suptitle("Algorithm Comparison: 1m iterations", fontsize=18)
+    a.fig.suptitle("Algorithm Comparison: 10m iterations", fontsize=18)
     handles = a._legend_data.values()
     labels = ["Across-Community Edge", "In-Community Edge"]
     sns.move_legend(a, (2, 2))
@@ -80,8 +87,11 @@ def directedCompareAlgorithms(file):
 
 def directedCompareWeights(file, x):
     df = pd.read_csv(file)
-    a = sns.histplot(df, x=x, hue='in_comm', multiple='layer',  bins=50)
-    a.set_title(str(x) + " 10000 nodes with 1m iterations")
+    # print(df.head())
+    # string = x + "_log"
+    # df[string] = df[x].apply(np.log)
+    a = sns.histplot(df, x=x, hue='in_comm', multiple='dodge',  bins=50)
+    a.set_title(str(x) + " 1000 nodes with 10m iterations")
     a.set_xlabel("Estimated Retracing Probability")
     a.set_ylabel("Count")
     a.legend(["In Community Edge", "Across Community Edge"])
@@ -101,5 +111,32 @@ def createAllDirected(file):
     directedCompareWeights(file, "weighted_zigzag")
 
 
+def allWasserstein(file):
+    files = createFileList()
+    iterations = ['1m', '10m', '100m']
+    methods = ['directed_rnbrw', 'directed_retrace', 'zigzag', 'zigzag_cycle', 'weighted_cycle']
+    for i in iterations:
+        for file in files:
+            string = file + "_" + i
+            for method in methods:
+                wasserstein(file, method)
+
+
+def createFileList():
+    nodes = ['500', '1000', '5000', '10000']
+    mu = ['1', '2', '3', '4']
+    degrees = ['1ln', '2ln', '3ln']
+    fileList = []
+    for node in nodes:
+        for m in mu:
+            for degree in degrees:
+                string = degree + "_" + node + "_" + m
+                fileList.append(string)
+    return fileList
+
+
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
-createAllDirected("csvEdgesDirected/1ln_10000_3_1m.csv")
+# createAll("csvEdges/7_1000_3_10m.csv")
+# createAllDirected("csvEdgesDirected/1ln_10000_3_10m.csv")
+print(createFileList())
+

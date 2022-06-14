@@ -1,14 +1,39 @@
-# Directed Network Community Detection
+# Generalizing Random-Walk Weighting Methods for Community Detection in Directed Graphs
 
-Definitions
+### Authors: Sam Feuer, Wyatt Hopkins, David Rollo, John Wright
 
-#### Normalized Mutual Information
+#### Abstract
 
-#### Modularity
 
-#### Non-backtracking random walk
 
-#### Retracing edge
+#### Introduction
+
+Network relationships are a common structure for scientific data in various domains.
+
+
+#### Notation and Preliminaries
+
+
+
+#### Directed Methods
+
+
+
+#### Undirected Improvements
+
+
+
+#### Mathematical Properties
+
+
+
+#### Simulation Results
+
+
+
+#### Conclusion
+
+
 
 ---
 

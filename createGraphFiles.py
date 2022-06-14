@@ -109,7 +109,7 @@ def readDiCommunities(file):
 
 
 def readDiAll(file):
-    if str(file[-4]) != ".dat":
+    if str(file[-4:]) != ".dat":
         file += ".dat"
     G = readDiGraph("digraphs/networks/"+file)
     groups = readDiCommunities("digraphs/communities/"+file)
