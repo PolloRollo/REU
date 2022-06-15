@@ -391,7 +391,6 @@ def digraphLabeling(G):
             storage[edge].append(node)
     for node in range(1, len(storage)):
         G.nodes[node]['in_edge'] = storage[node]
-    print()
 
 
 def directedRandomWalkUntilCycle(G, head, tail, retrace=False):
@@ -432,24 +431,22 @@ def DRNBRW(G, t):
     Returns true when complete
     """
     initial = .01
-    divisor = len(G.edges) * initial
+    # divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='directed_rnbrw')
-    failed = 0
+    # failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             complete, head, tail = directedRandomWalkUntilCycle(G, head, tail)
             if complete:
                 G[tail][head]['directed_rnbrw'] += 1
-                divisor += 1
-            else:
-                failed += 1
-    for head, tail in G.edges:
-        G[head][tail]['directed_rnbrw'] /= divisor
+                #divisor += 1
+    #for head, tail in G.edges:
+        #G[head][tail]['directed_rnbrw'] /= divisor
     # print("directed RNBRW", failed)
     return True
 
 
-def retraceDRNBRW(G, t):
+def backtrackDRW(G, t):
     """
     Parameters
     ----------
@@ -459,19 +456,19 @@ def retraceDRNBRW(G, t):
     Returns true when complete
     """
     initial = .01
-    divisor = len(G.edges) * initial
-    nx.set_edge_attributes(G, values=initial, name='directed_retrace')
+    # divisor = len(G.edges) * initial
+    nx.set_edge_attributes(G, values=initial, name='backtrack')
     failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             complete, head, tail = directedRandomWalkUntilCycle(G, head, tail, True)
             if complete:
-                G[tail][head]['directed_retrace'] += 1
-                divisor += 1
+                G[tail][head]['backtrack'] += 1
+                # divisor += 1
             else:
                 failed += 1
-    for head, tail in G.edges:
-        G[head][tail]['directed_retrace'] /= divisor
+    # for head, tail in G.edges:
+        # G[head][tail]['backtrack'] /= divisor
     # print("retraced RNBRW", failed)
     # print(len(G.edges))
     return True
@@ -509,9 +506,8 @@ def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
 def ZRNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
     initial = .01
-    divisor = len(G.edges) * initial
+    #divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='zigzag')
-    failed = 0
     for head, tail in G.edges:
         for trial in range(t):
             completed, head, tail, d = randomWalkUntilCycleZigZag(G, head, tail)
@@ -520,11 +516,9 @@ def ZRNBRW(G, t=1):
                     G[tail][head]['zigzag'] += 1
                 else:
                     G[head][tail]['zigzag'] += 1
-                divisor += 1
-            else:
-                failed += 1
-    for head, tail in G.edges:
-        G[head][tail]['zigzag'] /= divisor
+                # divisor += 1
+    # for head, tail in G.edges:
+        # G[head][tail]['zigzag'] /= divisor
     # print("zigzag", failed)
     return True
 
@@ -532,18 +526,18 @@ def ZRNBRW(G, t=1):
 def ZCNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
     initial = .01
-    divisor = len(G.edges) * initial
+    # divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='zigzag_cycle')
     for head, tail in G.edges:
         for trial in range(t):
             completed, cycle, d = randomWalkUntilCycleZigZag2(G, head, tail)
             if completed:
-                divisor += zigzagMethod(G, cycle, d, 'zigzag_cycle')
+                zigzagMethod(G, cycle, d, 'zigzag_cycle')
             completed, cycle, d = randomWalkUntilCycleZigZag2(G, tail, head, direction=-1)
             if completed:
-                divisor += zigzagMethod(G, cycle, d, 'zigzag_cycle')
-    for head, tail in G.edges:
-        G[head][tail]['zigzag_cycle'] /= divisor
+                zigzagMethod(G, cycle, d, 'zigzag_cycle')
+    # for head, tail in G.edges:
+        # G[head][tail]['zigzag_cycle'] /= divisor
     # print("zigzag_cycle", divisor)
     return True
 
@@ -605,7 +599,7 @@ def randomWalkUntilCycleZigZag2(G, head, tail, direction=1):
 def weightedZCNBRW(G, t=1):
     # Update the graph edge attributes for each edge found in a cycle
     initial = .01
-    divisor = len(G.edges) * initial
+    # divisor = len(G.edges) * initial
     nx.set_edge_attributes(G, values=initial, name='weighted_zigzag')
     for head, tail in G.edges:
         for trial in range(t):
@@ -630,9 +624,9 @@ def weightedZCNBRW(G, t=1):
                             G[cycle[node+2-offset]][cycle[node+1+offset]]['weighted_zigzag'] += 1 / len(cycle)
                         elif node == len(cycle) - 2:
                             G[cycle[node+1]][cycle[node]]['weighted_zigzag'] += 1 / len(cycle)
-                divisor += 1
-    for head, tail in G.edges:
-        G[head][tail]['weighted_zigzag'] /= divisor
+                # divisor += 1
+    # for head, tail in G.edges:
+        # G[head][tail]['weighted_zigzag'] /= divisor
     # print("weighted_zigzag", divisor)
     return True
 
@@ -641,7 +635,7 @@ def directedGraphToCSV(G, file, t=1):
     inCommunityLabel(G)
     # unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
     DRNBRW(G, t=t)
-    retraceDRNBRW(G, t=t)
+    backtrackDRW(G, t=t)
     # drnbrwGroups = nx.algorithms.community.louvain_communities(G, 'rnbrw', seed=100)
     ZRNBRW(G, t=t)
     ZCNBRW(G, t=t)
@@ -662,7 +656,7 @@ def directedGraphEdgesToCSV(G, file, t):
         for head, tail in G.edges:
             writer.writerow({'in_comm': G[head][tail]['in_comm'],
                              'directed_rnbrw': G[head][tail]['directed_rnbrw'],
-                             'directed_retrace': G[head][tail]['directed_retrace'],
+                             'backtrack': G[head][tail]['backtrack'],
                              'zigzag': G[head][tail]['zigzag'],
                              'zigzag_cycle': G[head][tail]['zigzag_cycle'],
                              'weighted_zigzag': G[head][tail]['weighted_zigzag']})

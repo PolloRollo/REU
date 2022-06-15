@@ -105,7 +105,7 @@ def directedCompareWeights(file, x):
 def createAllDirected(file):
     directedCompareAlgorithms(file)
     directedCompareWeights(file, "directed_rnbrw")
-    directedCompareWeights(file, "directed_retrace")
+    directedCompareWeights(file, 'backtrack')
     directedCompareWeights(file, "zigzag")
     directedCompareWeights(file, "zigzag_cycle")
     directedCompareWeights(file, "weighted_zigzag")
@@ -114,7 +114,7 @@ def createAllDirected(file):
 def allWasserstein():
     files = createFileList()
     iterations = ['1m', '10m', '100m']
-    methods = ['directed_rnbrw', 'directed_retrace', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
     for i in iterations:
         for file in files:
             string = "csvEdgesDirected/" + file + "_" + i + ".csv"

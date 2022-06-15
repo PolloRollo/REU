@@ -119,3 +119,16 @@ def readDiAll(file):
         for node in group:
             G.add_node(int(node), community=community)
     return G
+
+
+def writeGraphWeights(G, folder, file, method, t=1):
+    string = folder + "/" + method + "/" + file + "_" + str(t) + "m.txt"
+    f = open(string, "w")
+    for tail, head in G.edges:
+        # print(G[tail][head][method])
+        s = ' '.join([str(tail), str(head), str(G[tail][head][method]), "\n"])
+        f.write(s)
+
+
+
+

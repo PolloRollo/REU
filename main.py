@@ -148,8 +148,8 @@ def digraphTest(file, t=10):
     directedGraphToCSV(G, file, t=t)
 
 
-def createAllEdgeCSVs(t=1):
-    files = ['1ln_500_1', '2ln_500_1', '3ln_500_1',
+def returnFiles():
+    return ['1ln_500_1', '2ln_500_1', '3ln_500_1',
              '1ln_500_2', '2ln_500_2', '3ln_500_2',
              '1ln_500_3', '2ln_500_3', '3ln_500_3',
              '1ln_500_4', '2ln_500_4', '3ln_500_4',
@@ -165,6 +165,10 @@ def createAllEdgeCSVs(t=1):
              '1ln_10000_2', '2ln_10000_2', '3ln_10000_2',
              '1ln_10000_3', '2ln_10000_3', '3ln_10000_3',
              '1ln_10000_4', '2ln_10000_4', '3ln_10000_4']
+
+
+def createAllEdgeCSVs(t=1):
+    files = returnFiles()
     for file in files:
         digraphTest(file, t)
 
@@ -180,10 +184,31 @@ def reciprocalEdge(file):
     return count//2
 
 
-reciprocalEdge("1ln_10000_3")
+def writeAllWeights(file, t=1):
+    G = createGraphFiles.readDiAll(file)
+    digraphLabeling(G)
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+    DRNBRW(G, t)
+    backtrackDRW(G, t)
+    ZRNBRW(G, t)
+    ZCNBRW(G, t)
+    weightedZCNBRW(G, t)
+    for method in methods:
+        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method)
+
+
+def createAllWeightFiles(t=1):
+    files = returnFiles()
+    for file in files:
+        writeAllWeights(file, t=t)
+
+
+# reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("1ln_1000_3", t=1)
 # createAllEdgeCSVs(t=10)
+createAllWeightFiles(t=1)
+
