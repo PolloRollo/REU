@@ -169,9 +169,21 @@ def createAllEdgeCSVs(t=1):
         digraphTest(file, t)
 
 
+def reciprocalEdge(file):
+    G = createGraphFiles.readDiAll(file)
+    count = 0
+    for head, tail in G.edges:
+        if tail in G[head] and head in G[tail]:
+            count += 1
+    print(count//2)
+    print(len(G.edges))
+    return count//2
+
+
+reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("1ln_1000_3", t=1)
-createAllEdgeCSVs(t=10)
+# createAllEdgeCSVs(t=10)

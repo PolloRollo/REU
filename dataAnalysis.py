@@ -91,7 +91,7 @@ def directedCompareWeights(file, x):
     # string = x + "_log"
     # df[string] = df[x].apply(np.log)
     a = sns.histplot(df, x=x, hue='in_comm', multiple='dodge',  bins=50)
-    a.set_title(str(x) + " 1000 nodes with 10m iterations")
+    a.set_title(str(x) + " 500 nodes with 10m iterations")
     a.set_xlabel("Estimated Retracing Probability")
     a.set_ylabel("Count")
     a.legend(["In Community Edge", "Across Community Edge"])
@@ -111,15 +111,16 @@ def createAllDirected(file):
     directedCompareWeights(file, "weighted_zigzag")
 
 
-def allWasserstein(file):
+def allWasserstein():
     files = createFileList()
     iterations = ['1m', '10m', '100m']
-    methods = ['directed_rnbrw', 'directed_retrace', 'zigzag', 'zigzag_cycle', 'weighted_cycle']
+    methods = ['directed_rnbrw', 'directed_retrace', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
     for i in iterations:
         for file in files:
-            string = file + "_" + i
+            string = "csvEdgesDirected/" + file + "_" + i + ".csv"
             for method in methods:
-                wasserstein(file, method)
+                wasserstein(string, method)
+            print()
 
 
 def createFileList():
@@ -137,6 +138,7 @@ def createFileList():
 
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
-# createAllDirected("csvEdgesDirected/1ln_10000_3_10m.csv")
-print(createFileList())
+# createAllDirected("csvEdgesDirected/1ln_500_3_10m.csv")
+# print(createFileList())
+allWasserstein()
 
