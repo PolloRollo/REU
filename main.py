@@ -203,12 +203,12 @@ def createAllWeightFiles(t=1):
         writeAllWeights(file, t=t)
 
 
-# reciprocalEdge("1ln_10000_3")
+reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("1ln_1000_3", t=1)
 # createAllEdgeCSVs(t=10)
-createAllWeightFiles(t=1)
+# createAllWeightFiles(t=1)
 
