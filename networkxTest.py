@@ -14,6 +14,7 @@ from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_s
 import numpy as np
 import csv
 import os
+import directedlouvain
 
 
 def testAdjacency():
@@ -384,6 +385,7 @@ def graphEdgesToCSV(G, file, t):
                              'hybrid': G[head][tail]['hybrid']})
 
 
+"""
 def digraphLabeling(G):
     storage = [[] for node in range(len(G.nodes) + 1)]
     for node in range(1, len(G.nodes)):
@@ -391,6 +393,7 @@ def digraphLabeling(G):
             storage[edge].append(node)
     for node in range(1, len(storage)):
         G.nodes[node]['in_edge'] = storage[node]
+"""
 
 
 def directedRandomWalkUntilCycle(G, head, tail, retrace=False):
@@ -419,6 +422,34 @@ def directedRandomWalkUntilCycle(G, head, tail, retrace=False):
         tail = head
         head = random.choice(neighbors)
     return True, head, tail
+
+
+def directedRandomWalkUntilCycle2(G, head, tail):
+    """
+    Parameters
+    ----------
+    G : directed graph as an input
+    head : the node from which the directed edge is coming from
+    tail : the node which the directed edge is going to
+    retrace: whether or not we retrace reciprocal edges
+
+    Returns
+    -------
+    boolean : whether the random walk encountered a retracing edge
+    cycle : the two nodes which the directed edge that forms a cycle in the order of the directed edge
+    """
+    path_walked = []
+    while head not in path_walked:
+        neighbors = list(G.successors(head))
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if len(neighbors) == 0:
+            return False, path_walked
+        path_walked.append(head)
+        tail, head = head, random.choice(neighbors)
+    start = path_walked.index(head)
+    cycle = path_walked[start:]
+    return True, cycle
 
 
 def DRNBRW(G, t):
@@ -474,6 +505,26 @@ def backtrackDRW(G, t):
     return True
 
 
+def directedCycle(G, t=1):
+    """
+    Parameters
+    ----------
+    G : directed graph as input
+    t : number of iterations through the edges (t * m iterations)
+
+    Returns true when complete
+    """
+    initial = .01
+    nx.set_edge_attributes(G, values=initial, name='directed_cycle')
+    for head, tail in G.edges:
+        for trial in range(t):
+            complete, cycle = directedRandomWalkUntilCycle2(G, head, tail)
+            if complete:
+                for node in range(len(cycle)):
+                    G[cycle[node-1]][cycle[node]]['directed_cycle'] += 1
+    return True
+
+
 def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
     """
     Beginning with directed graph G, we choose a random edge in G.
@@ -487,9 +538,9 @@ def randomWalkUntilCycleZigZag(G, head, tail, direction=-1):
     # Random walk until cycle
     while head not in path:
         if direction < 0:
-            neighbors = list(G[head])
+            neighbors = list(G.successors(head))
         else:
-            neighbors = list(G.nodes[head]['in_edge'])
+            neighbors = list(G.predecessors(head))
         if tail in neighbors:
             neighbors.remove(tail)
         if head in neighbors:
@@ -579,9 +630,9 @@ def randomWalkUntilCycleZigZag2(G, head, tail, direction=1):
     while head not in path:
         direction *= -1
         if direction < 0:
-            neighbors = list(G[head])
+            neighbors = list(G.successors(head))
         else:
-            neighbors = list(G.nodes[head]['in_edge'])
+            neighbors = list(G.predecessors(head))
         if tail in neighbors:
             neighbors.remove(tail)
         if head in neighbors:
@@ -594,6 +645,44 @@ def randomWalkUntilCycleZigZag2(G, head, tail, direction=1):
     start = path.index(head)
     cycle = path[start:]
     return True, cycle, direction
+
+
+def randomWalkCousin(G, tail, head, direction=1):
+    """
+    Beginning with directed graph G, we choose a random edge in G.
+    Since G is directed, we randomly decide a head and tail for the edge.
+    We then randomly walk, without backtracking until we revisit a node
+    OR we visit a node with no edges (besides backtracking).
+
+    We return the cycle found by the random walk where the retracing edge connects [0] and [-1]
+    """
+    path = [tail]
+    edges = [[tail, head]]
+    # Random walk until cycle
+    while head not in path:
+        direction *= -1
+        if direction > 0:
+            neighbors = list(G.successors(head))
+        else:
+            neighbors = list(G.predecessors(head))
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if head in neighbors:
+            neighbors.remove(head)
+        if len(neighbors) == 0:
+            return False, path, direction
+        path.append(head)
+        head, tail = random.choice(neighbors), head
+        if direction > 0:
+            edges.append([tail, head])
+        else:
+            edges.append([head, tail])
+    # Return statements (retraced edge or cycle list)
+    start = path.index(head)
+    cycleNodes = path[start:]
+    cycleEdges = edges[start:]
+    print(cycleEdges)
+    return True, cycleNodes, direction
 
 
 def weightedZCNBRW(G, t=1):
@@ -650,7 +739,7 @@ def directedGraphEdgesToCSV(G, file, t):
     if not os.access(string, 0):
         print("Error: Failed to access CSV file")
     with open(string, 'w') as csvfile:
-        fieldnames = ['in_comm', 'directed_rnbrw', 'directed_retrace', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+        fieldnames = ['in_comm', 'directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         for head, tail in G.edges:
@@ -661,3 +750,26 @@ def directedGraphEdgesToCSV(G, file, t):
                              'zigzag_cycle': G[head][tail]['zigzag_cycle'],
                              'weighted_zigzag': G[head][tail]['weighted_zigzag']})
 
+
+def subgraphRNBRW(G):
+    source, target = random.choice(list(G.edges))
+    complete, cycle = directedRandomWalkUntilCycle2(G, source, target)
+    H = G.subgraph(cycle)
+    # nx.set_edge_attributes(H, values='Red', name='color')
+    pos = nx.spring_layout(G, k=0.15, iterations=20,seed=1234)
+    plt.figure(15, figsize=(60, 60))
+    nx.draw(G, pos)
+    plt.show()
+
+
+def visualize(G, truecom):
+    color_map = []
+    for node in G:
+        for i in range(len(truecom)):
+            if node in truecom[i]:
+                color_map.append(i)
+
+    pos = nx.spring_layout(G, k=0.15, iterations=20,seed=1234)
+    plt.figure(15, figsize=(60,60))
+    nx.draw(G, pos, node_size=200, arrowsize=10, node_color=color_map, cmap=plt.cm.hsv)
+    plt.show()

@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy as np
+# import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy import stats
@@ -91,7 +91,7 @@ def directedCompareWeights(file, x):
     # string = x + "_log"
     # df[string] = df[x].apply(np.log)
     a = sns.histplot(df, x=x, hue='in_comm', multiple='dodge',  bins=50)
-    a.set_title(str(x) + " 500 nodes with 10m iterations")
+    a.set_title(str(x) + " .8 mu 1000 nodes with 10m iterations")
     a.set_xlabel("Estimated Retracing Probability")
     a.set_ylabel("Count")
     a.legend(["In Community Edge", "Across Community Edge"])
@@ -105,7 +105,8 @@ def directedCompareWeights(file, x):
 def createAllDirected(file):
     directedCompareAlgorithms(file)
     directedCompareWeights(file, "directed_rnbrw")
-    directedCompareWeights(file, 'backtrack')
+    # directedCompareWeights(file, "directed_cycle")
+    # directedCompareWeights(file, 'backtrack')
     directedCompareWeights(file, "zigzag")
     directedCompareWeights(file, "zigzag_cycle")
     directedCompareWeights(file, "weighted_zigzag")
@@ -138,7 +139,7 @@ def createFileList():
 
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
-# createAllDirected("csvEdgesDirected/1ln_500_3_10m.csv")
+createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
 # print(createFileList())
-allWasserstein()
+# allWasserstein()
 

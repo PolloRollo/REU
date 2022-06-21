@@ -44,3 +44,8 @@ Why should cycles work?
 Iterating through lists is significantly faster compared to randomly selecting
 
 
+
+RenEEL model:
+
+Begin with set of partitions P, where we find the maximum modularity
+

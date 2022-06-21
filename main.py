@@ -9,6 +9,7 @@ from networkxTest import *
 from time import time
 from math import log, sqrt, floor
 import createGraphFiles
+# import directedlouvain
 
 
 def main(n, group_count=25, draw=False):
@@ -144,12 +145,12 @@ def digraphTest(file, t=10):
     G = createGraphFiles.readDiAll(file)
     communities = identifyLFRCommunities(G)
     print(file, "Community Count", len(communities))
-    digraphLabeling(G)
+    # digraphLabeling(G)
     directedGraphToCSV(G, file, t=t)
 
 
 def returnFiles():
-    return ['1ln_500_1', '2ln_500_1', '3ln_500_1',
+    """return ['1ln_500_1', '2ln_500_1', '3ln_500_1',
              '1ln_500_2', '2ln_500_2', '3ln_500_2',
              '1ln_500_3', '2ln_500_3', '3ln_500_3',
              '1ln_500_4', '2ln_500_4', '3ln_500_4',
@@ -164,7 +165,19 @@ def returnFiles():
              '1ln_10000_1', '2ln_10000_1', '3ln_10000_1',
              '1ln_10000_2', '2ln_10000_2', '3ln_10000_2',
              '1ln_10000_3', '2ln_10000_3', '3ln_10000_3',
-             '1ln_10000_4', '2ln_10000_4', '3ln_10000_4']
+             '1ln_10000_4', '2ln_10000_4', '3ln_10000_4']"""
+    return ['1ln_500_6', '2ln_500_6', '3ln_500_6',
+           '1ln_500_8', '2ln_500_8', '3ln_500_8',
+           '5ln_500_1', '10ln_500_1', '5ln_500_2',
+           '10ln_500_2', '5ln_500_3', '5ln_500_3',
+            '5ln_500_4', '10ln_500_4', '5ln_500_6',
+            '10ln_500_6', '5ln_500_8', '5ln_500_8',
+           '1ln_1000_6', '2ln_1000_6', '3ln_1000_6',
+           '1ln_1000_8', '2ln_1000_8', '3ln_1000_8',
+           '5ln_1000_1', '10ln_1000_1', '5ln_1000_2',
+           '10ln_1000_2', '5ln_1000_3', '10ln_1000_3',
+            '5ln_1000_4', '10ln_1000_4', '5ln_1000_6',
+            '10ln_1000_6', '5ln_1000_8', '10ln_1000_8']
 
 
 def createAllEdgeCSVs(t=1):
@@ -186,15 +199,18 @@ def reciprocalEdge(file):
 
 def writeAllWeights(file, t=1):
     G = createGraphFiles.readDiAll(file)
-    digraphLabeling(G)
-    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
-    DRNBRW(G, t)
-    backtrackDRW(G, t)
+    # digraphLabeling(G)
+    # methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
+    print(file)
+    methods = ['zigzag', 'zigzag_cycle', 'weighted_zigzag']
+    # DRNBRW(G, t)
+    # backtrackDRW(G, t)
     ZRNBRW(G, t)
     ZCNBRW(G, t)
     weightedZCNBRW(G, t)
+    # directedCycle(G, t)
     for method in methods:
-        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method)
+        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, t=t)
 
 
 def createAllWeightFiles(t=1):
@@ -203,12 +219,63 @@ def createAllWeightFiles(t=1):
         writeAllWeights(file, t=t)
 
 
-reciprocalEdge("1ln_10000_3")
+def randomWalkPath(G):
+    tail = random.choice(list(G.nodes))
+    path = [tail]
+    head = random.choice(list(G.successors(tail)))
+    edges = [[tail, head]]
+    while head not in path:
+        neighbors = list(G.successors(head))
+        if tail in neighbors:
+            neighbors.remove(tail)
+        if len(neighbors) == 0:
+            return False, path, edges
+        path.append(head)
+        tail, head = head, random.choice(neighbors)
+        edges.append([tail, head])
+    print(head)
+    return True, path, edges
+
+
+def subdigraphTest(file):
+    G = createGraphFiles.readDiAll(file)
+    # plt.figure(15, figsize=(60, 60))
+    complete, path, edges = randomWalkPath(G)
+    print(path)
+    H = G.subgraph(path)
+    nx.set_edge_attributes(G, values=0, name='path')
+    # for edge1, edge2 in edges:
+        # G[edge1][edge2]['path'] = 10
+    nx.set_edge_attributes(H, values=1, name='path')
+    edges, weights = zip(*nx.get_edge_attributes(H, 'path').items())
+    # print(edges)
+    color_map = [(i in path) for i in range(len(G.nodes))]
+    pos = nx.kamada_kawai_layout(G)
+    # nx.draw(G, pos, node_size=20, node_color=color_map, arrowsize=5)
+    nx.draw_networkx_edges(G, pos, edgelist=edges, width=1.0, edge_color='y', style='solid')
+    plt.show()
+    # subgraphRNBRW(G)
+
+
+"""
+edges, weights = zip(*nx.get_edge_attributes(G, weight).items())
+nx.draw(G, edgelist=edges, edge_color=weights)
+"""
+
+
+def subgraphTest(file):
+    G = createGraphFiles.readAll(file)
+    nx.draw(G)
+    plt.show()
+
+
+# subdigraphTest("1ln_1000_1")
+# reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
-# digraphTest("1ln_1000_3", t=1)
-# createAllEdgeCSVs(t=10)
-# createAllWeightFiles(t=1)
+# digraphTest("1ln_1000_8", t=10)
+createAllEdgeCSVs(t=10)
+# createAllWeightFiles(t=10)
 
