@@ -169,9 +169,9 @@ def returnFiles():
     return ['1ln_500_6', '2ln_500_6', '3ln_500_6',
            '1ln_500_8', '2ln_500_8', '3ln_500_8',
             '5ln_500_2',
-           '10ln_500_2', '5ln_500_3', '5ln_500_3',
+            '5ln_500_3', '5ln_500_3',
             '5ln_500_4', '10ln_500_4', '5ln_500_6',
-            '10ln_500_6', '5ln_500_8', '5ln_500_8',
+            '10ln_500_6', '5ln_500_8', '10ln_500_8',
            '1ln_1000_6', '2ln_1000_6', '3ln_1000_6',
            '1ln_1000_8', '2ln_1000_8', '3ln_1000_8',
            '5ln_1000_1', '10ln_1000_1', '5ln_1000_2',
@@ -200,15 +200,15 @@ def reciprocalEdge(file):
 def writeAllWeights(file, t=1):
     G = createGraphFiles.readDiAll(file)
     # digraphLabeling(G)
-    # methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
     print(file)
-    methods = ['zigzag', 'zigzag_cycle', 'weighted_zigzag']
-    # DRNBRW(G, t)
-    # backtrackDRW(G, t)
+    # methods = ['directed_rnbrw', 'backtrack', 'directed_cycle']
+    DRNBRW(G, t)
+    backtrackDRW(G, t)
     ZRNBRW(G, t)
     ZCNBRW(G, t)
     weightedZCNBRW(G, t)
-    # directedCycle(G, t)
+    directedCycle(G, t)
     for method in methods:
         createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, t=t)
 
@@ -276,6 +276,6 @@ def subgraphTest(file):
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("1ln_1000_8", t=10)
-createAllEdgeCSVs(t=10)
-# createAllWeightFiles(t=10)
+# createAllEdgeCSVs(t=10)
+createAllWeightFiles(t=10)
 

@@ -69,21 +69,7 @@ def readDiGraph(file):
     """ Returns networkx DiGraph from generated network file """
     if not os.access(file, 0):
         print("Error: Failed to access file")
-    f = open(file, "r")
-    G = nx.DiGraph()
-
-    for line in f:
-        source, target = line.split()
-        source = int(source)
-        target = int(target)
-        if source not in G.nodes:
-            G.add_node(source)
-        if target not in G.nodes:
-            G.add_node(target)
-        G.add_edge(source, target)
-
-    f.close()
-
+    G = nx.read_edgelist(file, create_using=nx.DiGraph, nodetype=int)
     return G
 
 
