@@ -7,8 +7,6 @@ David Rollo's code for testing NetworkX
 import networkx as nx
 import random
 from math import floor
-from graphData import createAdjacency
-from graphData import adjacencyToDict
 import matplotlib.pyplot as plt
 from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_score
 import numpy as np

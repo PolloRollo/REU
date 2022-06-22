@@ -169,7 +169,7 @@ def returnFiles():
     return ['1ln_500_6', '2ln_500_6', '3ln_500_6',
            '1ln_500_8', '2ln_500_8', '3ln_500_8',
             '5ln_500_2',
-            '5ln_500_3', '5ln_500_3',
+            '5ln_500_3', '10ln_500_3',
             '5ln_500_4', '10ln_500_4', '5ln_500_6',
             '10ln_500_6', '5ln_500_8', '10ln_500_8',
            '1ln_1000_6', '2ln_1000_6', '3ln_1000_6',
@@ -180,9 +180,8 @@ def returnFiles():
             '10ln_1000_6', '5ln_1000_8', '10ln_1000_8']
 
 
-def createAllEdgeCSVs(t=1):
-    files = returnFiles()
-    for file in files:
+def createAllEdgeCSVs(directory="digraphs/networks/", t=1):
+    for file in os.listdir(directory):
         digraphTest(file, t)
 
 
@@ -213,9 +212,8 @@ def writeAllWeights(file, t=1):
         createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, t=t)
 
 
-def createAllWeightFiles(t=1):
-    files = returnFiles()
-    for file in files:
+def createAllWeightFiles(directory="digraphs/networks/", t=1):
+    for file in os.listdir(directory):
         writeAllWeights(file, t=t)
 
 
@@ -275,7 +273,7 @@ def subgraphTest(file):
 # createGraphPackage(c=7)
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
-# digraphTest("1ln_1000_8", t=10)
-# createAllEdgeCSVs(t=10)
-createAllWeightFiles(t=10)
+# digraphTest("10ln_500_3", t=1)
+createAllEdgeCSVs(t=1)
+# createAllWeightFiles(t=10)
 

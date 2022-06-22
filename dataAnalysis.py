@@ -3,6 +3,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy import stats
+import os
 
 
 def compareAlgorithms(file):
@@ -113,7 +114,7 @@ def createAllDirected(file):
 
 
 def allWasserstein():
-    files = createFileList()
+    files = os.listdir("digraphs/networks/")
     iterations = ['1m', '10m', '100m']
     methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
     for i in iterations:
@@ -124,22 +125,40 @@ def allWasserstein():
             print()
 
 
-def createFileList():
-    nodes = ['500', '1000', '5000', '10000']
-    mu = ['1', '2', '3', '4']
-    degrees = ['1ln', '2ln', '3ln']
-    fileList = []
-    for node in nodes:
-        for m in mu:
-            for degree in degrees:
-                string = degree + "_" + node + "_" + m
-                fileList.append(string)
-    return fileList
+def edgeStatistics(file):
+    df = pd.read_csv(file)
+    methodDF = df.groupby(by='in_comm', as_index=False).agg({'directed_rnbrw': ['median', 'mean', 'std'],
+                                                             'backtrack': ['median', 'mean', 'std'],
+                                                             'zigzag': ['median', 'mean', 'std'],
+                                                             'zigzag_cycle': ['median', 'mean', 'std'],
+                                                             'weighted_zigzag': ['median', 'mean', 'std']})
+    methodDF['file'] = file.split(sep="/")[1]
+    nameList = file.replace('_', ' ').replace('/', ' ').replace('.', ' ').split()
+    methodDF['nodes'] = int(nameList[2])
+    methodDF['edges'] = int(nameList[1][0])
+    methodDF['mixing'] = int(nameList[3])
+    methodDF['iter'] = int(nameList[4][:-1])
+    # print(methodDF.head())
+    return methodDF
 
 
+def createMetaAnalysis(directory="csvEdgesDirected"):
+    metaDF = None
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        print(f)
+        methodDF = edgeStatistics(f)
+        if metaDF is None:
+            metaDF = methodDF
+        else:
+            metaDF = pd.concat([metaDF, methodDF])
+    metaDF.to_csv("metaEdges.csv")
+
+
+createMetaAnalysis()
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
-createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
+# createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
 # print(createFileList())
 # allWasserstein()
 
