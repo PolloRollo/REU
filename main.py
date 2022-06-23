@@ -245,5 +245,5 @@ def subgraphTest(file):
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("10ln_500_3", t=1)
-# createAllEdgeCSVs("digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
-createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
+createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
+# createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
