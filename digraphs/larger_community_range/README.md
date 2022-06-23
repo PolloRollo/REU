@@ -1,0 +1,1 @@
+Graphs in this folder have been generated with minc = 10 and maxc = 120 rather than the default 30 and 70.

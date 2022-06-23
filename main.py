@@ -141,48 +141,18 @@ def testCSVGraph(file, t=10):
     GraphToCSV(G, file, t=100)
 
 
-def digraphTest(file, t=10):
-    G = createGraphFiles.readDiAll(file)
+def digraphTest(file, extra='', t=10):
+    G = createGraphFiles.readDiAll(file, extra=extra)
     communities = identifyLFRCommunities(G)
     print(file, "Community Count", len(communities))
     # digraphLabeling(G)
-    directedGraphToCSV(G, file, t=t)
+    directedGraphToCSV(G, file, extra=extra, t=t)
 
 
-def returnFiles():
-    """return ['1ln_500_1', '2ln_500_1', '3ln_500_1',
-             '1ln_500_2', '2ln_500_2', '3ln_500_2',
-             '1ln_500_3', '2ln_500_3', '3ln_500_3',
-             '1ln_500_4', '2ln_500_4', '3ln_500_4',
-             '1ln_1000_1', '2ln_1000_1', '3ln_1000_1',
-             '1ln_1000_2', '2ln_1000_2', '3ln_1000_2',
-             '1ln_1000_3', '2ln_1000_3', '3ln_1000_3',
-             '1ln_1000_4', '2ln_1000_4', '3ln_1000_4',
-             '1ln_5000_1', '2ln_5000_1', '3ln_5000_1',
-             '1ln_5000_2', '2ln_5000_2', '3ln_5000_2',
-             '1ln_5000_3', '2ln_5000_3', '3ln_5000_3',
-             '1ln_5000_4', '2ln_5000_4', '3ln_5000_4',
-             '1ln_10000_1', '2ln_10000_1', '3ln_10000_1',
-             '1ln_10000_2', '2ln_10000_2', '3ln_10000_2',
-             '1ln_10000_3', '2ln_10000_3', '3ln_10000_3',
-             '1ln_10000_4', '2ln_10000_4', '3ln_10000_4']"""
-    return ['1ln_500_6', '2ln_500_6', '3ln_500_6',
-           '1ln_500_8', '2ln_500_8', '3ln_500_8',
-            '5ln_500_2',
-            '5ln_500_3', '10ln_500_3',
-            '5ln_500_4', '10ln_500_4', '5ln_500_6',
-            '10ln_500_6', '5ln_500_8', '10ln_500_8',
-           '1ln_1000_6', '2ln_1000_6', '3ln_1000_6',
-           '1ln_1000_8', '2ln_1000_8', '3ln_1000_8',
-           '5ln_1000_1', '10ln_1000_1', '5ln_1000_2',
-           '10ln_1000_2', '5ln_1000_3', '10ln_1000_3',
-            '5ln_1000_4', '10ln_1000_4', '5ln_1000_6',
-            '10ln_1000_6', '5ln_1000_8', '10ln_1000_8']
-
-
-def createAllEdgeCSVs(directory="digraphs/networks/", t=1):
+def createAllEdgeCSVs(directory="digraphs/networks/", extra="", t=1):
     for file in os.listdir(directory):
-        digraphTest(file, t)
+        file = file[:-4]
+        digraphTest(file, extra=extra, t=t)
 
 
 def reciprocalEdge(file):
@@ -196,8 +166,8 @@ def reciprocalEdge(file):
     return count//2
 
 
-def writeAllWeights(file, t=1):
-    G = createGraphFiles.readDiAll(file)
+def writeAllWeights(file, extra='', t=1):
+    G = createGraphFiles.readDiAll(file, extra=extra)
     # digraphLabeling(G)
     methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
     print(file)
@@ -209,12 +179,13 @@ def writeAllWeights(file, t=1):
     weightedZCNBRW(G, t)
     directedCycle(G, t)
     for method in methods:
-        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, t=t)
+        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, extra=extra, t=t)
 
 
-def createAllWeightFiles(directory="digraphs/networks/", t=1):
+def createAllWeightFiles(directory="digraphs/networks/", extra='', t=1):
     for file in os.listdir(directory):
-        writeAllWeights(file, t=t)
+        file = file[:-4]
+        writeAllWeights(file, extra=extra, t=t)
 
 
 def randomWalkPath(G):
@@ -274,6 +245,5 @@ def subgraphTest(file):
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("10ln_500_3", t=1)
-createAllEdgeCSVs(t=1)
-# createAllWeightFiles(t=10)
-
+# createAllEdgeCSVs("digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
+createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)

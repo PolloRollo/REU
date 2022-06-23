@@ -1,0 +1,1 @@
+Graphs in this folder were generated with tau1 = 2 and tau2 = 1 rather than the default tau1 = 2.5 and tau2 = 1.5

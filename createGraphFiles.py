@@ -94,12 +94,17 @@ def readDiCommunities(file):
     return list(communities.values())
 
 
-def readDiAll(file):
+def readDiAll(file, extra=''):
     if str(file[-4:]) != ".dat":
         file += ".dat"
-    G = readDiGraph("digraphs/networks/"+file)
-    groups = readDiCommunities("digraphs/communities/"+file)
-
+    G = None
+    groups = None
+    if len(extra) > 0:
+        G = readDiGraph('digraphs/' + extra + '/networks/' + file)
+        groups = readDiCommunities('digraphs/' + extra + '/communities/' + file)
+    else:
+        G = readDiGraph("digraphs/networks/" + file)
+        groups = readDiCommunities("digraphs/communities/" + file)
     for group in groups:
         community = group
         for node in group:
@@ -107,8 +112,12 @@ def readDiAll(file):
     return G
 
 
-def writeGraphWeights(G, folder, file, method, t=1):
-    string = folder + "/" + method + "/" + file + "_" + str(t) + "m.txt"
+def writeGraphWeights(G, folder, file, method, extra='', t=1):
+    string = ""
+    if len(extra) > 0:
+        string = folder + "/" + method + "/" + file + extra + "_" + str(t) + "m.txt"
+    else:
+        string = folder + "/" + method + "/" + file + "_" + str(t) + "m.txt"
     f = open(string, "w")
     for tail, head in G.edges:
         # print(G[tail][head][method])

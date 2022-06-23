@@ -136,7 +136,7 @@ def edgeStatistics(file):
     nameList = file.replace('_', ' ').replace('/', ' ').replace('.', ' ').split()
     methodDF['nodes'] = int(nameList[2])
     methodDF['edges'] = int(nameList[1][0])
-    methodDF['mixing'] = int(nameList[3])
+    methodDF['mixing'] = int(nameList[3][0])
     methodDF['iter'] = int(nameList[4][:-1])
     # print(methodDF.head())
     return methodDF

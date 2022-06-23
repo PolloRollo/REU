@@ -718,7 +718,7 @@ def weightedZCNBRW(G, t=1):
     return True
 
 
-def directedGraphToCSV(G, file, t=1):
+def directedGraphToCSV(G, file, extra='', t=1):
     inCommunityLabel(G)
     # unweightedGroups = nx.algorithms.community.louvain_communities(G, seed=100)
     DRNBRW(G, t=t)
@@ -729,11 +729,15 @@ def directedGraphToCSV(G, file, t=1):
     weightedZCNBRW(G, t=t)
     # zigzagGroups = nx.algorithms.community.louvain_communities(G, 'cycle', seed=100)
     # graphNodesToCSV(G, file)
-    directedGraphEdgesToCSV(G, file, t)
+    directedGraphEdgesToCSV(G, file, t, extra=extra)
 
 
-def directedGraphEdgesToCSV(G, file, t):
-    string = "csvEdgesDirected" + "/" + file + "_" + str(t) +"m.csv"
+def directedGraphEdgesToCSV(G, file, t, extra=''):
+    string = ""
+    if len(extra) > 0:
+        string = "csvEdgesDirected" + "/" + file + extra + "_" + str(t) + "m.csv"
+    else:
+        string = "csvEdgesDirected" + "/" + file + "_" + str(t) + "m.csv"
     if not os.access(string, 0):
         print("Error: Failed to access CSV file")
     with open(string, 'w') as csvfile:
