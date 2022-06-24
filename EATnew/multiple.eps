@@ -1,0 +1,732 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Title: 1. C:\Users\batagelj\test\EAT\multipleSort.net (39)
+%%Creator: Pajek: http://pajek.imfm.si/doku.php?id=history
+%%CreationDate: 08-12-2013, 5:01:11
+%%BoundingBox: 0 0 736 709
+%
+%!PS
+% Color Dictionary / adapted from color.pro
+% Graph Dictionary / drawing graphs
+% --------------------------------------------
+% Vladimir Batagelj
+% version 0: 27 mar 1994 experimental version
+% version 1: 12 nov 1994 basic set (color, a, e, ... )
+% version 2: 25 dec 1994 extensions
+% version 3:  5 jan 1995 arct/arcto - level2/level1 --> *arct
+% version 4: 12 jan 1995 ce, empty
+% version  : 28 dec 1997 pajkec, tri
+%
+
+/ColorDict 150 dict def
+
+ColorDict begin
+ /B {bind def} def
+ /GreenYellow   {0.15 0    0.69 0    }def
+ /Yellow        {0    0    1    0    }def
+ /Goldenrod     {0    0.10 0.84 0    }def
+ /Dandelion     {0    0.29 0.84 0    }def
+ /Apricot       {0    0.32 0.52 0    }def
+ /Peach         {0    0.50 0.70 0    }def
+ /Melon         {0    0.46 0.50 0    }def
+ /YellowOrange  {0    0.42 1    0    }def
+ /Orange        {0    0.61 0.87 0    }def
+ /BurntOrange   {0    0.51 1    0    }def
+ /Bittersweet   {0    0.75 1    0.24 }def
+ /RedOrange     {0    0.77 0.87 0    }def
+ /Mahogany      {0    0.85 0.87 0.35 }def
+ /Maroon        {0    0.87 0.68 0.32 }def
+ /BrickRed      {0    0.89 0.94 0.28 }def
+ /Red           {0    1    1    0    }def
+ /OrangeRed     {0    1    0.50 0    }def
+ /RubineRed     {0    1    0.13 0    }def
+ /WildStrawberry{0    0.96 0.39 0    }def
+ /Salmon        {0    0.53 0.38 0    }def
+ /CarnationPink {0    0.63 0    0    }def
+ /Magenta       {0    1    0    0    }def
+ /VioletRed     {0    0.81 0    0    }def
+ /Rhodamine     {0    0.82 0    0    }def
+ /Mulberry      {0.34 0.90 0    0.02 }def
+ /RedViolet     {0.07 0.90 0    0.34 }def
+ /Fuchsia       {0.47 0.91 0    0.08 }def
+ /Lavender      {0    0.48 0    0    }def
+ /Thistle       {0.12 0.59 0    0    }def
+ /Orchid        {0.32 0.64 0    0    }def
+ /DarkOrchid    {0.40 0.80 0.20 0    }def
+ /Purple        {0.45 0.86 0    0    }def
+ /Plum          {0.50 1    0    0    }def
+ /Violet        {0.79 0.88 0    0    }def
+ /RoyalPurple   {0.75 0.90 0    0    }def
+ /BlueViolet    {0.86 0.91 0    0.04 }def
+ /Periwinkle    {0.57 0.55 0    0    }def
+ /CadetBlue     {0.62 0.57 0.23 0    }def
+ /CornflowerBlue{0.65 0.13 0    0    }def
+ /MidnightBlue  {0.98 0.13 0    0.43 }def
+ /NavyBlue      {0.94 0.54 0    0    }def
+ /RoyalBlue     {1    0.50 0    0    }def
+ /Blue          {1    1    0    0    }def
+ /Cerulean      {0.94 0.11 0    0    }def
+ /Cyan          {1    0    0    0    }def
+ /ProcessBlue   {0.96 0    0    0    }def
+ /SkyBlue       {0.62 0    0.12 0    }def
+ /Turquoise     {0.85 0    0.20 0    }def
+ /TealBlue      {0.86 0    0.34 0.02 }def
+ /Aquamarine    {0.82 0    0.30 0    }def
+ /BlueGreen     {0.85 0    0.33 0    }def
+ /Emerald       {1    0    0.50 0    }def
+ /JungleGreen   {0.99 0    0.52 0    }def
+ /SeaGreen      {0.69 0    0.50 0    }def
+ /Green         {1    0    1    0    }def
+ /ForestGreen   {0.91 0    0.88 0.12 }def
+ /PineGreen     {0.92 0    0.59 0.25 }def
+ /LimeGreen     {0.50 0    1    0    }def
+ /YellowGreen   {0.44 0    0.74 0    }def
+ /SpringGreen   {0.26 0    0.76 0    }def
+ /OliveGreen    {0.64 0    0.95 0.40 }def
+ /RawSienna     {0 0.72    1    0.45 }def
+ /Sepia         {0 0.83    1    0.70 }def
+ /Brown         {0 0.81    1    0.60 }def
+ /Tan           {0.14 0.42 0.56 0    }def
+ /Gray          {0    0    0    0.50 }def
+ /Black         {0    0    0    1    }def
+ /White         {0    0    0    0    }def
+ /LightYellow   {0    0    0.4  0    }def
+ /LightCyan     {0.2  0    0    0    }def
+ /LightMagenta  {0    0.2  0    0    }def
+ /LightPurple   {0.2  0.2  0    0    }def
+ /LightGreen    {0.2  0    0.3  0    }def
+ /LightOrange   {0    0.2  0.3  0    }def
+ /Canary        {0    0    0.50 0    }def
+ /LFadedGreen   {0.10 0    0.20 0    }def
+ /Pink          {0    0.15 0.05 0    }def
+ /LSkyBlue      {0.15 0.05 0    0    }def
+ /Gray05        {0    0    0    0.05 }def
+ /Gray10        {0    0    0    0.10 }def
+ /Gray15        {0    0    0    0.15 }def
+ /Gray20        {0    0    0    0.20 }def
+ /Gray25        {0    0    0    0.25 }def
+ /Gray30        {0    0    0    0.30 }def
+ /Gray35        {0    0    0    0.35 }def
+ /Gray40        {0    0    0    0.40 }def
+ /Gray45        {0    0    0    0.45 }def
+ /Gray50        {0    0    0    0.50 }def
+ /Gray55        {0    0    0    0.55 }def
+ /Gray60        {0    0    0    0.60 }def
+ /Gray65        {0    0    0    0.65 }def
+ /Gray70        {0    0    0    0.70 }def
+ /Gray75        {0    0    0    0.75 }def
+ /Gray80        {0    0    0    0.80 }def
+ /Gray85        {0    0    0    0.85 }def
+ /Gray90        {0    0    0    0.90 }def
+ /Gray95        {0    0    0    0.95 }def
+end
+
+/GraphPic 50 dict def
+
+GraphPic begin
+% level1/level2
+  /arct* {arcto 4 {pop} repeat} bind def
+
+  /languagelevel where
+    {pop languagelevel}{1} ifelse
+  2 lt {
+    /*arct /arct* load def
+  }{
+    /*arct /arct load def
+  } ifelse
+
+% Parameters
+  /fos 15 def          % font size
+  /h  9 def            % arrow height
+  /d 10 def            % arrow depth
+  /o  5 def            % arrow width
+  /ic { White } def    % interior color (fill)
+  /bc { Black } def    % boundary color
+  /bw { 1 } def        % boundary width
+  /r  { 5 } def        % oval radius
+  /q  { 0.5 } def      % hexagon
+  /setFontSize { /fos exch def } def
+  /setArrHeight { /h exch def } def
+  /setArrDepth { /d exch def } def
+  /setArrWidth { /o exch def } def
+% Dash Patterns
+  /Solid { [ ] 0 } def
+  /Dashed { [4 3] 2 } def
+  /Dots { [3 6] 2 } def
+  /c {setcmykcolor} def
+% labels
+  /l { % text angle x y
+    gsave moveto rotate c show grestore } def
+  /cl { % text angle x y
+    gsave moveto rotate c dup stringwidth exch 2 div neg exch fos add
+    2.5 div neg rmoveto show grestore } def
+% arrows
+  /arrowA { newpath -10 0 moveto 15 h lineto d 0 lineto 15 h neg lineto
+    closepath gsave fill grestore 0 setlinejoin 0.1 setlinewidth stroke } def
+  /arrowB { /Bl { h h mul 625 add sqrt } bind def /Bd { -10 o Bl mul h div
+    add} bind def /Bg { h o Bl mul 25 div sub } bind def newpath 15 h moveto
+    -10 0 lineto 15 h neg lineto 15 Bg neg lineto Bd 0 lineto 15 Bg lineto
+    closepath gsave fill grestore 0 setlinejoin 0.1 setlinewidth Solid
+    setdash stroke } def
+  /ArrowA {  % size alpha x y
+    gsave translate pop rotate 0.2 mul dup scale arrowA grestore } def
+  /ArrowB {  %   alpha x y
+    gsave translate pop rotate 0.2 mul dup scale arrowB grestore } def
+% vertex
+  /v { % bndcolor w intcolor x y radius
+    0 360 arc gsave c fill grestore setlinewidth c stroke } def
+% edge
+  /e { % width color dashpat u1 v1 u2 v2 x2 y2 x1 y1
+    moveto curveto setdash c setlinewidth stroke } def
+% oval edge
+  /oe { % width color dashpat r u1 v1 x2 y2 x1 y1
+    moveto 2 copy 7 1 roll 7 1 roll 5 -1 roll *arct
+    lineto setdash c setlinewidth stroke } def
+% circular edge
+  /ce { % width color dashpat x y r a1 a2
+    arc setdash c setlinewidth stroke } def
+% straight edge
+  /se { % width color dashpat x2 y2 x1 y1
+    moveto lineto setdash c setlinewidth stroke } def
+% double edge
+  /de { % width color dashpat x2 y2 x1 y1
+    moveto lineto setdash c /q_a exch def
+    gsave q_a 5.5 mul setlinewidth stroke grestore
+    White c q_a 3 mul setlinewidth stroke} def
+% arc
+  /a { % arrow size angle width color dashpat u1 v1 u2 v2 x2 y2 x1 y1
+    moveto curveto setdash c dup setlinewidth currentpoint 6 -1 roll
+    cvx exec stroke } def
+% straight arc
+  /sa { % arrow size angle width color dashpat x2 y2 x1 y1
+    moveto lineto setdash c dup setlinewidth currentpoint 6 -1 roll
+    cvx exec stroke } def
+% circle
+  /circle {
+    0 0 10 0 360 arc gsave ic c fill grestore bw setlinewidth
+    bc c stroke } def
+% square
+  /square { -10 -10 moveto 0 20 rlineto 20 0 rlineto 0 -20 rlineto
+    -20 0 rlineto gsave ic c fill grestore bw setlinewidth bc c stroke } def
+% cross
+  /cross { 0 -10 moveto 0 20 rlineto -10 0 moveto 20 0 rlineto
+     bw setlinewidth bc c stroke } def
+% box
+  /box { % a b
+    /q_b exch def /q_a exch def newpath 0 q_b moveto q_a neg q_b q_a neg 0 r
+    *arct q_a neg q_b neg  0 q_b neg  r  *arct q_a q_b neg  q_a 0  r  *arct
+    q_a q_b  0 q_b  r  *arct closepath gsave ic c fill
+    grestore bw setlinewidth bc c stroke } def
+% triangle
+  /tria { %
+    /d_b exch def /d_a exch def 
+    /q_b {0.5 d_b mul} def /q_a {0.5 d_a mul} def
+    newpath 
+    q_a neg q_b neg moveto q_a q_b neg lineto 0 q_b lineto
+    closepath gsave ic c fill
+    grestore 
+    bw setlinewidth bc c stroke } def
+% diamond
+  /diamond { % a b
+    /d_b exch def /d_a exch def /d_c {d_a q mul} def
+    newpath 0 d_b moveto d_c neg d_b  d_a neg 0  r  *arct
+    d_a neg 0 d_c neg d_b neg r *arct d_c neg d_b neg d_c d_b neg r *arct
+    d_c d_b neg d_a 0 r *arct d_a 0 d_c d_b r *arct d_c d_b 0 d_b r *arct
+    closepath gsave ic c fill grestore bw setlinewidth
+    bc c stroke } def
+% ellipse
+  /ellipse { % a b
+    /q_b exch def /q_a exch def newpath /m matrix currentmatrix def
+    q_a q_b scale 0 0 1 0 360 arc closepath m setmatrix gsave ic c fill
+    grestore bw setlinewidth bc c stroke } def
+% helicopter
+  /helicopter{ ic c 16 6 false [16 0 0 6 0 0]
+      {<dd ff 00 ff 54 1f 80 03 fb f9 00 1e>} imagemask} def
+% empty
+  /empty { } def
+% figure scaled:   x_size y_size phi x y  fs
+  /fs { gsave translate rotate scale cvx exec grestore } def
+% figure absolute: x_size y_size phi x y  fa
+  /fa { gsave translate rotate 3 -1 roll cvx exec grestore } def
+% pajkec
+  /pajkec {
+%Title: Pajkec
+%Creator: Logo2PS 1.1; Copyright 1997, Vladimir Batagelj
+%CreationDate: Sun Dec 28 23:32:48 1997
+%BoundingBox: 0 0 145 96
+gsave
+/q_b exch def /q_a exch def q_a q_b scale 
+1 setlinecap 1 setlinejoin
+5 setlinewidth
+0.0000 0.0000 0.0000 setrgbcolor
+  7.67  49.98 moveto  31.76  72.76 lineto  46.91  78.63 lineto
+ 57.23  80.49 lineto  72.86  65.23 moveto  65.73  83.25 lineto
+ 57.06  75.49 lineto  56.75  68.65 lineto  76.27  68.03 moveto
+ 75.65  84.50 lineto  93.92  91.02 lineto 107.24  74.87 lineto
+ 80.29  67.72 moveto  89.28  84.81 lineto 104.77  81.70 lineto
+116.23  73.31 lineto 121.18  59.33 lineto  56.75  81.08 moveto
+ 71.31  64.30 lineto stroke  3 setlinewidth
+ 86.18  70.21 moveto  91.45  73.00 lineto  95.78  69.58 lineto
+ 91.14  60.88 moveto  96.09  62.75 lineto  98.26  59.33 lineto
+stroke newpath
+ 81.07  49.08 moveto  87.81  49.08 lineto  93.30  54.38 lineto 
+ 93.30  60.88 lineto  93.30  67.39 lineto  87.81  72.69 lineto 
+ 81.07  72.69 lineto  74.33  72.69 lineto  68.83  67.39 lineto
+ 68.83  60.88 lineto  68.83  54.38 lineto  74.33  49.08 lineto
+ 81.07  49.08 lineto  closepath 
+gsave 0.3922 0.3922 0.3922 setrgbcolor fill grestore
+1 setlinewidth 0.0000 0.0000 0.0000 setrgbcolor stroke
+ 54.63  37.53 moveto  68.53  43.56 lineto  75.39  55.85 lineto
+ 69.90  65.35 lineto  64.41  72.86 lineto  48.60  74.06 lineto
+ 34.71  68.04 lineto  20.81  55.02 lineto  15.95  40.72 lineto
+ 17.44  33.22 lineto  24.92  28.72 lineto  40.73  30.51 lineto
+ 54.63  37.53 lineto  closepath 
+gsave 0.3922 0.3922 0.3922 setrgbcolor fill grestore
+stroke  5 setlinewidth
+ 77.82  50.63 moveto 103.84  59.33 lineto 131.10  43.80 lineto
+139.46  27.95 lineto 139.15  15.83 lineto  35.99   5.27 moveto
+ 47.15  32.92 lineto  61.71  50.01 lineto  70.07  46.90 lineto
+ 82.77  45.04 lineto  83.39  27.02 lineto  65.42  12.11 lineto
+ 68.52  50.63 moveto  91.14  49.39 lineto 103.53  43.17 lineto
+117.16  22.67 lineto 115.30   8.38 lineto stroke
+1.0000 1.0000 1.0000 setrgbcolor
+ 41.57  54.98 moveto  60.16  64.61 lineto  52.41  66.17 moveto
+ 57.99  57.47 lineto stroke 
+ /Helvetica 55 selectfont 
+(Pajek) Red 0.00 5 -40 l
+grestore
+  } def
+
+end
+
+% Straight Arc: type size angle width color pattern x2 y2 x1 y1 sa
+% Bezier Arc: type size angle width color pattern u1 v1 u2 v2 x2 y2 x1 y1 a
+% Straight Edge: width color pattern x2 y2 x1 y1 se
+% Bezier Edge: width color pattern u1 v1 u2 v2 x2 y2 x1 y1 e
+% Vertex: colorbnd widthbnd colorinside x y r v
+% Label: (label) color angle x y cl
+%
+ColorDict begin GraphPic begin
+%
+/fos     15.00  def 
+/Helvetica fos  selectfont
+% Label: 
+(1) Black    88.07  114.96  473.58    cl
+% Arc:     1    7
+/ArrowA     1.00  283.07    1.00 Black Solid   124.70  452.10  126.86  491.19  125.28  497.98  122.67  445.44     a
+% Label: 
+(1) Black    88.07  112.26  473.68    cl
+% Arc:     1    7
+/ArrowA     1.00  253.07    1.00 Black Solid   121.09  452.23  121.57  491.37  123.60  498.04  122.67  445.44     a
+% Label: 
+(1) Black   -52.45  160.62  416.17    cl
+% Arc:     1   10
+/ArrowA     1.00  112.55    1.00 Black Solid   131.86  438.40  173.45  385.67  177.90  374.97  122.67  445.44     a
+% Label: 
+(1) Black   -52.45  157.05  413.43    cl
+% Arc:     1   10
+/ArrowA     1.00  142.55    1.00 Black Solid   127.11  434.74  167.37  380.99  176.56  373.94  122.67  445.44     a
+% Label: 
+(2) Black   256.76  154.07  654.05    cl
+% Arc:     2    9
+/ArrowA     1.00   61.76    1.00 Black Solid   148.39  672.07  142.49  643.31  139.96  638.60  148.22  677.42     a
+% Label: 
+(2) Black   256.76  152.04  654.52    cl
+% Arc:     2    9
+/ArrowA     1.00   91.76    1.00 Black Solid   145.69  672.70  138.15  644.33  138.32  638.98  148.22  677.42     a
+% Label: 
+(4) Black   187.71  235.80  366.25    cl
+% Arc:     3   10
+/ArrowA     1.00   22.71    1.00 Black Solid   268.74  381.54  202.97  373.49  192.42  369.07  280.09  380.09     a
+% Label: 
+(4) Black   187.71  236.39  361.85    cl
+% Arc:     3   10
+/ArrowA     1.00  352.71    1.00 Black Solid   269.54  375.68  203.99  365.95  192.64  367.40  280.09  380.09     a
+% Label: 
+(1) Black    33.62  295.73  404.03    cl
+% Arc:     3   13
+/ArrowA     1.00  198.62    1.00 Black Solid   284.43  385.02  314.54  406.05  320.77  408.15  280.09  380.09     a
+% Label: 
+(1) Black    33.62  297.14  401.91    cl
+% Arc:     3   13
+/ArrowA     1.00  228.62    1.00 Black Solid   286.31  382.19  317.36  401.82  321.70  406.75  280.09  380.09     a
+% Label: 
+(6) Black   261.17  138.80  542.05    cl
+% Arc:     4    7
+/ArrowA     1.00   96.17    1.00 Black Solid   131.92  566.04  124.62  524.52  125.42  517.10  134.93  572.86     a
+% Label: 
+(6) Black   261.17  141.67  541.61    cl
+% Arc:     4    7
+/ArrowA     1.00   66.17    1.00 Black Solid   135.74  565.44  130.10  523.66  127.09  516.84  134.93  572.86     a
+% Label: 
+(1) Black    87.92  124.63  598.39    cl
+% Arc:     4    9
+/ArrowA     1.00  252.92    1.00 Black Solid   133.53  578.99  133.95  613.99  135.80  619.99  134.93  572.86     a
+% Label: 
+(1) Black    87.92  127.07  598.30    cl
+% Arc:     4    9
+/ArrowA     1.00  282.92    1.00 Black Solid   136.78  578.87  138.89  613.81  137.48  619.93  134.93  572.86     a
+% Label: 
+(1) Black    79.01   84.54   85.76    cl
+% Arc:    16   12
+/ArrowA     1.00  244.01    1.00 Black Solid    87.12   50.44   98.73  114.63  103.67  124.75   87.91   39.21     a
+% Label: 
+(1) Black    79.01   88.83   84.93    cl
+% Arc:    16   12
+/ArrowA     1.00  274.01    1.00 Black Solid    92.85   49.33  106.11  113.20  105.32  124.43   87.91   39.21     a
+% Label: 
+(1) Black    30.74  122.67  345.78    cl
+% Arc:    17   10
+/ArrowA     1.00  195.74    1.00 Black Solid    90.58  316.12  160.91  358.93  174.47  362.75   80.76  306.04     a
+% Label: 
+(1) Black    30.74  125.46  341.08    cl
+% Arc:    17   10
+/ArrowA     1.00  225.74    1.00 Black Solid    94.31  309.86  165.50  351.21  175.33  361.30   80.76  306.04     a
+% Label: 
+(2) Black   270.00  215.31   96.86    cl
+% Arc:    18   15
+/ArrowA     1.00   75.00    1.00 Black Solid   206.28  142.35  207.12   54.51  203.24   40.03  202.40  156.83     a
+% Label: 
+(2) Black   -90.00  209.49   96.86    cl
+% Arc:    18   15
+/ArrowA     1.00  105.00    1.00 Black Solid   198.52  142.35  197.68   54.51  201.56   40.03  202.40  156.83     a
+% Label: 
+(1) Black   135.42  224.13  307.99    cl
+% Arc:    19   10
+/ArrowA     1.00  300.42    1.00 Black Solid   265.11  280.20  197.38  345.76  189.25  359.60  279.07  272.27     a
+% Label: 
+(1) Black   135.42  228.51  312.43    cl
+% Arc:    19   10
+/ArrowA     1.00  330.42    1.00 Black Solid   270.94  286.11  204.39  352.87  190.43  360.80  279.07  272.27     a
+% Label: 
+(2) Black    -1.95  114.85  382.28    cl
+% Arc:    20   10
+/ArrowA     1.00  163.05    1.00 Black Solid    67.31  374.90  158.68  372.64  173.58  368.10   52.13  371.38     a
+% Label: 
+(2) Black    -1.95  114.65  376.24    cl
+% Arc:    20   10
+/ArrowA     1.00  193.05    1.00 Black Solid    67.04  366.84  158.35  362.90  173.52  366.41   52.13  371.38     a
+% Label: 
+(1) Black   241.09  231.56  427.02    cl
+% Arc:    21   10
+/ArrowA     1.00   46.09    1.00 Black Solid   249.33  477.55  200.51  387.41  188.44  374.86  253.51  494.45     a
+% Label: 
+(1) Black   241.09  225.64  430.29    cl
+% Arc:    21   10
+/ArrowA     1.00   76.09    1.00 Black Solid   241.44  481.91  191.15  392.58  186.97  375.68  253.51  494.45     a
+% Label: 
+(1) Black   -88.70  117.29  183.17    cl
+% Arc:    22   12
+/ArrowA     1.00   76.30    1.00 Black Solid   107.25  215.23  109.49  153.85  106.97  143.52  104.27  225.44     a
+% Label: 
+(1) Black   -88.70  113.17  183.08    cl
+% Arc:    22   12
+/ArrowA     1.00  106.30    1.00 Black Solid   101.75  215.11  102.30  153.69  105.29  143.48  104.27  225.44     a
+% Label: 
+(1) Black    88.65  563.47   77.13    cl
+% Arc:    23   11
+/ArrowA     1.00  253.65    1.00 Black Solid   572.08   45.88  572.63  104.82  575.51  114.64  574.49   35.94     a
+% Label: 
+(1) Black    88.65  567.44   77.04    cl
+% Arc:    23   11
+/ArrowA     1.00  283.65    1.00 Black Solid   577.37   45.76  579.60  104.66  577.19  114.60  574.49   35.94     a
+% Label: 
+(1) Black    56.73  380.65  503.15    cl
+% Arc:    24    5
+/ArrowA     1.00  251.73    1.00 Black Solid   371.16  469.15  407.04  522.30  410.52  532.83  362.89  461.78     a
+% Label: 
+(1) Black    56.73  377.05  505.51    cl
+% Arc:    24    5
+/ArrowA     1.00  221.73    1.00 Black Solid   366.36  472.30  400.84  526.37  409.11  533.75  362.89  461.78     a
+% Label: 
+(1) Black   235.52  357.16  433.50    cl
+% Arc:    24   13
+/ArrowA     1.00   40.52    1.00 Black Solid   360.68  455.52  340.34  424.43  335.30  420.12  362.89  461.78     a
+% Label: 
+(1) Black   235.52  355.04  434.96    cl
+% Arc:    24   13
+/ArrowA     1.00   70.52    1.00 Black Solid   357.84  457.46  336.12  427.33  333.91  421.07  362.89  461.78     a
+% Label: 
+(1) Black   251.90  657.82  465.15    cl
+% Arc:    25   14
+/ArrowA     1.00   56.90    1.00 Black Solid   663.62  511.90  636.65  426.72  628.33  413.95  664.44  527.12     a
+% Label: 
+(1) Black   251.90  652.19  466.99    cl
+% Arc:    25   14
+/ArrowA     1.00   86.90    1.00 Black Solid   656.12  514.35  627.56  429.69  626.73  414.47  664.44  527.12     a
+% Label: 
+(1) Black    86.02  429.42   76.60    cl
+% Arc:    26    8
+/ArrowA     1.00  251.02    1.00 Black Solid   436.57   44.92  439.83  103.91  443.16  113.61  438.53   34.85     a
+% Label: 
+(1) Black    86.03  433.39   76.32    cl
+% Arc:    26    8
+/ArrowA     1.00  281.02    1.00 Black Solid   441.87   44.55  446.80  103.43  444.84  113.49  438.53   34.85     a
+% Label: 
+(1) Black    81.40  306.08   84.20    cl
+% Arc:    27    6
+/ArrowA     1.00  246.40    1.00 Black Solid   309.33   44.34  319.67  118.35  324.81  130.10  310.76   31.58     a
+% Label: 
+(1) Black    81.40  311.01   83.46    cl
+% Arc:    27    6
+/ArrowA     1.00  276.40    1.00 Black Solid   315.89   43.34  327.90  117.10  326.47  129.85  310.76   31.58     a
+% Label: 
+(3) Black   169.35  264.37  337.53    cl
+% Arc:    28   10
+/ArrowA     1.00  334.35    1.00 Black Solid   324.82  335.03  210.08  355.76  192.29  364.30  344.49  336.53     a
+% Label: 
+(3) Black   169.35  265.79  345.05    cl
+% Arc:    28   10
+/ArrowA     1.00    4.35    1.00 Black Solid   326.70  345.07  212.28  367.45  192.61  365.95  344.49  336.53     a
+% Label: 
+(1) Black   154.71  248.14  321.30    cl
+% Arc:    29   10
+/ArrowA     1.00  319.71    1.00 Black Solid   301.24  305.98  205.08  350.49  191.36  362.12  318.93  302.77     a
+% Label: 
+(1) Black   154.71  251.13  327.61    cl
+% Arc:    29   10
+/ArrowA     1.00  349.71    1.00 Black Solid   305.22  314.40  209.77  360.43  192.08  363.64  318.93  302.77     a
+% Label: 
+(1) Black   241.51  449.72  579.68    cl
+% Arc:    30    5
+/ArrowA     1.00   46.52    1.00 Black Solid   457.44  613.38  427.91  557.20  420.36  549.24  460.00  624.05     a
+% Label: 
+(1) Black   241.52  445.98  581.71    cl
+% Arc:    30    5
+/ArrowA     1.00   76.52    1.00 Black Solid   452.45  616.09  421.44  560.71  418.88  550.04  460.00  624.05     a
+% Label: 
+(1) Black   109.24  195.90  289.27    cl
+% Arc:    31   10
+/ArrowA     1.00  274.24    1.00 Black Solid   222.04  241.24  186.72  339.90  185.41  357.63  232.04  226.53     a
+% Label: 
+(1) Black   109.24  202.42  291.55    cl
+% Arc:    31   10
+/ArrowA     1.00  304.24    1.00 Black Solid   230.73  244.27  197.00  343.48  186.99  358.19  232.04  226.53     a
+% Label: 
+(1) Black    68.91  151.97  320.50    cl
+% Arc:    32   10
+/ArrowA     1.00  233.91    1.00 Black Solid   147.45  283.14  171.79  348.60  178.88  358.32  146.18  271.18     a
+% Label: 
+(1) Black    68.91  156.33  318.82    cl
+% Arc:    32   10
+/ArrowA     1.00  263.91    1.00 Black Solid   153.26  280.90  179.17  345.76  180.44  357.72  146.18  271.18     a
+% Label: 
+(2) Black    49.64  584.22  376.18    cl
+% Arc:    33   14
+/ArrowA     1.00  214.64    1.00 Black Solid   570.79  345.97  609.19  392.45  617.79  398.39  566.31  336.53     a
+% Label: 
+(2) Black    49.64  587.31  373.55    cl
+% Arc:    33   14
+/ArrowA     1.00  244.64    1.00 Black Solid   574.91  342.47  614.59  387.86  619.07  397.30  566.31  336.53     a
+% Label: 
+(2) Black   265.55  342.97  187.94    cl
+% Arc:    34    6
+/ArrowA     1.00   70.55    1.00 Black Solid   336.25  221.35  332.24  159.04  328.64  148.85  334.27  231.98     a
+% Label: 
+(2) Black   265.55  338.79  188.27    cl
+% Arc:    34    6
+/ArrowA     1.00  100.55    1.00 Black Solid   330.67  221.79  324.98  159.61  326.96  148.98  334.27  231.98     a
+% Label: 
+(2) Black   -41.89  600.91  442.17    cl
+% Arc:    35   14
+/ArrowA     1.00  123.11    1.00 Black Solid   574.32  453.36  613.14  419.67  618.05  412.15  566.31  457.42     a
+% Label: 
+(2) Black   -41.89  598.58  439.57    cl
+% Arc:    35   14
+/ArrowA     1.00  153.11    1.00 Black Solid   571.22  449.89  608.91  414.96  616.92  410.90  566.31  457.42     a
+% Label: 
+(1) Black   113.33  637.20  343.82    cl
+% Arc:    36   14
+/ArrowA     1.00  278.33    1.00 Black Solid   662.06  309.18  629.54  382.45  627.55  396.04  670.58  298.41     a
+% Label: 
+(1) Black   113.33  642.09  345.93    cl
+% Arc:    36   14
+/ArrowA     1.00  308.33    1.00 Black Solid   668.59  311.99  637.61  385.93  629.09  396.70  670.58  298.41     a
+% Label: 
+(1) Black   268.79  589.83  176.11    cl
+% Arc:    37   11
+/ArrowA     1.00   73.79    1.00 Black Solid   581.31  211.05  580.75  144.68  577.55  133.68  578.58  222.18     a
+% Label: 
+(1) Black   268.79  585.39  176.20    cl
+% Arc:    37   11
+/ArrowA     1.00  103.79    1.00 Black Solid   575.38  211.18  573.14  144.84  575.87  133.71  578.58  222.18     a
+% Label: 
+(1) Black   -24.21  123.65  408.03    cl
+% Arc:    38   10
+/ArrowA     1.00  140.79    1.00 Black Solid    75.25  419.98  162.19  381.80  174.72  371.58   59.29  422.57     a
+% Label: 
+(1) Black   -24.21  121.08  402.31    cl
+% Arc:    38   10
+/ArrowA     1.00  170.79    1.00 Black Solid    71.81  412.35  158.07  372.64  174.03  370.05   59.29  422.57     a
+% Label: 
+(1) Black   266.27  460.05  172.30    cl
+% Arc:    39    8
+/ArrowA     1.00   71.27    1.00 Black Solid   452.94  206.01  449.67  142.88  446.16  132.53  450.80  216.73     a
+% Label: 
+(1) Black   266.27  455.82  172.58    cl
+% Arc:    39    8
+/ArrowA     1.00  101.27    1.00 Black Solid   447.29  206.38  442.34  143.36  444.48  132.64  450.80  216.73     a
+% Change to Solid line
+Solid setdash
+/ic { Red } def 
+/bc { Black } def 
+/bw {     0.50 } def 
+/r {     0.00 } def 
+/q {    0.001 } def 
+% Vertex:     1
+/ellipse    6.40    6.40    0.00  122.67  445.44 fa
+% Label:     1
+(10) Black     0.00  125.51  434.81     l
+% Vertex:     2
+/ellipse    6.40    6.40    0.00  148.22  677.42 fa
+% Label:     2
+(22) Black     0.00  151.07  666.79     l
+% Vertex:     3
+/ellipse    6.40    6.40    0.00  280.09  380.09 fa
+% Label:     3
+(3/4) Black     0.00  282.94  369.47     l
+% Vertex:     4
+/ellipse    6.40    6.40    0.00  134.93  572.86 fa
+% Label:     4
+(40) Black     0.00  137.78  562.24     l
+% Vertex:     5
+/ellipse    6.40    6.40    0.00  415.02  541.28 fa
+% Label:     5
+(40 DAYS) Black     0.00  417.87  530.65     l
+% Vertex:     6
+/ellipse    6.40    6.40    0.00  327.11  139.40 fa
+% Label:     6
+(40 WINKS) Black     0.00  329.96  128.78     l
+% Vertex:     7
+/ellipse    6.40    6.40    0.00  124.77  507.54 fa
+% Label:     7
+(41) Black     0.00  127.62  496.92     l
+% Vertex:     8
+/ellipse    6.40    6.40    0.00  444.67  123.07 fa
+% Label:     8
+(42) Black     0.00  447.51  112.44     l
+% Vertex:     9
+/ellipse    6.40    6.40    0.00  136.98  629.50 fa
+% Label:     9
+(44) Black     0.00  139.82  618.87     l
+% Vertex:    10
+/ellipse    6.40    6.40    0.00  183.08  366.92 fa
+% Label:    10
+(5) Black     0.00  185.93  356.30     l
+% Vertex:    11
+/ellipse    6.40    6.40    0.00  576.53  124.16 fa
+% Label:    11
+(5' 10'') Black     0.00  579.38  113.53     l
+% Vertex:    12
+/ellipse    6.40    6.40    0.00  106.31  133.96 fa
+% Label:    12
+(5/-) Black     0.00  109.16  123.33     l
+% Vertex:    13
+/ellipse    6.40    6.40    0.00  329.16  412.77 fa
+% Label:    13
+(5/6) Black     0.00  332.00  402.14     l
+% Vertex:    14
+/ellipse    6.40    6.40    0.00  624.58  405.14 fa
+% Label:    14
+(5D) Black     0.00  627.42  394.52     l
+% Vertex:    15
+/ellipse    6.40    6.40    0.00  202.40   30.49 fa
+% Label:    15
+(5TH) Black     0.00  205.25   19.87     l
+% Vertex:    16
+/ellipse    6.40    6.40    0.00   87.91   39.21 fa
+% Label:    16
+(ADMISSION) Black     0.00   90.76   28.58     l
+% Vertex:    17
+/ellipse    6.40    6.40    0.00   80.76  306.04 fa
+% Label:    17
+(BANKS) Black     0.00   83.60  295.41     l
+% Vertex:    18
+/ellipse    6.40    6.40    0.00  202.40  156.83 fa
+% Label:    18
+(BEETHOVEN) Black     0.00  205.25  146.20     l
+% Vertex:    19
+/ellipse    6.40    6.40    0.00  279.07  272.27 fa
+% Label:    19
+(BOB) Black     0.00  281.91  261.65     l
+% Vertex:    20
+/ellipse    6.40    6.40    0.00   52.13  371.38 fa
+% Label:    20
+(CHANNEL) Black     0.00   54.98  360.76     l
+% Vertex:    21
+/ellipse    6.40    6.40    0.00  253.51  494.45 fa
+% Label:    21
+(CONTINENTS) Black     0.00  256.36  483.82     l
+% Vertex:    22
+/ellipse    6.40    6.40    0.00  104.27  225.44 fa
+% Label:    22
+(DINNERS) Black     0.00  107.11  214.82     l
+% Vertex:    23
+/ellipse    6.40    6.40    0.00  574.49   35.94 fa
+% Label:    23
+(HEIGHT) Black     0.00  577.34   25.31     l
+% Vertex:    24
+/ellipse    6.40    6.40    0.00  362.89  461.78 fa
+% Label:    24
+(LENT) Black     0.00  365.74  451.15     l
+% Vertex:    25
+/ellipse    6.40    6.40    0.00  664.44  527.12 fa
+% Label:    25
+(LETTER) Black     0.00  667.29  516.50     l
+% Vertex:    26
+/ellipse    6.40    6.40    0.00  438.53   34.85 fa
+% Label:    26
+(MEASUREMENT) Black     0.00  441.38   24.23     l
+% Vertex:    27
+/ellipse    6.40    6.40    0.00  310.76   31.58 fa
+% Label:    27
+(NAPPING) Black     0.00  313.60   20.96     l
+% Vertex:    28
+/ellipse    6.40    6.40    0.00  344.49  336.53 fa
+% Label:    28
+(PENTAGON) Black     0.00  347.34  325.90     l
+% Vertex:    29
+/ellipse    6.40    6.40    0.00  318.93  302.77 fa
+% Label:    29
+(PERSONS) Black     0.00  321.78  292.14     l
+% Vertex:    30
+/ellipse    6.40    6.40    0.00  460.00  624.05 fa
+% Label:    30
+(RAINED) Black     0.00  462.85  613.43     l
+% Vertex:    31
+/ellipse    6.40    6.40    0.00  232.04  226.53 fa
+% Label:    31
+(SENSES) Black     0.00  234.89  215.91     l
+% Vertex:    32
+/ellipse    6.40    6.40    0.00  146.18  271.18 fa
+% Label:    32
+(SEVENTY) Black     0.00  149.02  260.56     l
+% Vertex:    33
+/ellipse    6.40    6.40    0.00  566.31  336.53 fa
+% Label:    33
+(SHILLING) Black     0.00  569.16  325.90     l
+% Vertex:    34
+/ellipse    6.40    6.40    0.00  334.27  231.98 fa
+% Label:    34
+(SNOOZE) Black     0.00  337.11  221.35     l
+% Vertex:    35
+/ellipse    6.40    6.40    0.00  566.31  457.42 fa
+% Label:    35
+(STAMP) Black     0.00  569.16  446.79     l
+% Vertex:    36
+/ellipse    6.40    6.40    0.00  670.58  298.41 fa
+% Label:    36
+(STAMPS) Black     0.00  673.42  287.79     l
+% Vertex:    37
+/ellipse    6.40    6.40    0.00  578.58  222.18 fa
+% Label:    37
+(UP TO) Black     0.00  581.42  211.55     l
+% Vertex:    38
+/ellipse    6.40    6.40    0.00   59.29  422.57 fa
+% Label:    38
+(V) Black     0.00   62.14  411.94     l
+% Vertex:    39
+/ellipse    6.40    6.40    0.00  450.80  216.73 fa
+% Label:    39
+(WARD) Black     0.00  453.65  206.10     l
+/pajkec 0.18 0.18 0 706 12 fa
+showpage end end

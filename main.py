@@ -166,7 +166,7 @@ def reciprocalEdge(file):
     return count//2
 
 
-def writeAllWeights(file, extra='', t=1):
+def writeAllWeights(file, folder="weightedDigraphs",extra='', t=1):
     G = createGraphFiles.readDiAll(file, extra=extra)
     # digraphLabeling(G)
     methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
@@ -179,7 +179,7 @@ def writeAllWeights(file, extra='', t=1):
     weightedZCNBRW(G, t)
     directedCycle(G, t)
     for method in methods:
-        createGraphFiles.writeGraphWeights(G, folder="weightedDigraphs", file=file, method=method, extra=extra, t=t)
+        createGraphFiles.writeGraphWeights(G, folder=folder, file=file, method=method, extra=extra, t=t)
 
 
 def createAllWeightFiles(directory="digraphs/networks/", extra='', t=1):
@@ -226,6 +226,20 @@ def subdigraphTest(file):
     # subgraphRNBRW(G)
 
 
+def thesaurus(file='EATnew/EATgraph.txt', t=1):
+    G = nx.read_weighted_edgelist(file, create_using=nx.DiGraph, nodetype=int)
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
+    print(file)
+    # methods = ['directed_rnbrw', 'backtrack', 'directed_cycle']
+    DRNBRW(G, t)
+    backtrackDRW(G, t)
+    ZRNBRW(G, t)
+    ZCNBRW(G, t)
+    weightedZCNBRW(G, t)
+    directedCycle(G, t)
+    for method in methods:
+        createGraphFiles.writeGraphWeights(G, folder='weightedDigraphs/thesaurusWeighted', file='EATgraph.txt', method=method, t=t)
+
 """
 edges, weights = zip(*nx.get_edge_attributes(G, weight).items())
 nx.draw(G, edgelist=edges, edge_color=weights)
@@ -245,5 +259,6 @@ def subgraphTest(file):
 # testCSVGraph()
 # testCSVGraph("7_1000_3", 100)
 # digraphTest("10ln_500_3", t=1)
-createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
+# createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
 # createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
+thesaurus()

@@ -161,14 +161,17 @@ def createMetaAnalysis(directory="csvEdgesDirected"):
 
 def performMetaAnalysis():
     df = pd.read_csv("metaEdges.csv")
+
     a = sns.scatterplot(data=df,
-                        x= df['edges'],
-                        y=df['in_comm_weighted_zigzag_mean'] - df['out_comm_weighted_zigzag_mean'],
-                        hue=df['mixing'])
+                        x= df['out_comm_directed_rnbrw_mean']/df['iter'],
+                        y=df['in_comm_directed_rnbrw_mean']/df['iter'],
+                        hue=df['mixing'],
+                        palette="hls")
     a.set_title("Analysis of Weights for LFR Benchmarks")
-    a.set_xlabel("Edge count coeffiecient")
-    a.set_ylabel("Difference between mean in community vs \nacross community Weighted Zigzag")
-    a.legend(['.1', '.2', '.3', '.4', '.6', '.8'])
+    a.set_xlabel("Mean Across Community Weight")
+    a.set_ylabel("Mean In Community Weight")
+    a.legend({0: '0', 1: '.1', 2: '.2', 3: '.3', 4: '.4', 6: '.6', 8: '.8'})
+    # a.color_palette("hls", 8)
     plt.show()
 
 
