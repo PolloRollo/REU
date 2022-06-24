@@ -106,8 +106,8 @@ def directedCompareWeights(file, x):
 def createAllDirected(file):
     directedCompareAlgorithms(file)
     directedCompareWeights(file, "directed_rnbrw")
-    # directedCompareWeights(file, "directed_cycle")
-    # directedCompareWeights(file, 'backtrack')
+    directedCompareWeights(file, "directed_cycle")
+    directedCompareWeights(file, 'backtrack')
     directedCompareWeights(file, "zigzag")
     directedCompareWeights(file, "zigzag_cycle")
     directedCompareWeights(file, "weighted_zigzag")
@@ -163,23 +163,25 @@ def performMetaAnalysis():
     df = pd.read_csv("metaEdges.csv")
 
     a = sns.scatterplot(data=df,
-                        x= df['out_comm_directed_rnbrw_mean']/df['iter'],
-                        y=df['in_comm_directed_rnbrw_mean']/df['iter'],
-                        hue=df['mixing'],
-                        palette="hls")
-    a.set_title("Analysis of Weights for LFR Benchmarks")
-    a.set_xlabel("Mean Across Community Weight")
-    a.set_ylabel("Mean In Community Weight")
-    a.legend({0: '0', 1: '.1', 2: '.2', 3: '.3', 4: '.4', 6: '.6', 8: '.8'})
+                        x=df['in_comm_directed_rnbrw_mean']/df['iter'],
+                        y=df['out_comm_directed_rnbrw_mean']/df['iter'],
+                        hue=df['nodes'],
+                        palette="flare")
+    a.set_title("Analysis of Mean Weights Colored by Node Count")
+    a.set_xlabel("Mean In-Community Weight")
+    a.set_ylabel("Mean Across-Community Weight")
+    a.legend(['0', '500', '1000', '5000', '10000'])
+    # a.legend(['0', '.1', '.2', '.3', '.4', '.6', '.8'])
     # a.color_palette("hls", 8)
     plt.show()
 
 
 # createMetaAnalysis()
-performMetaAnalysis()
+# performMetaAnalysis()
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
 # createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
+createAllDirected("EATnew/EATcsv_1m.csv")
 # print(createFileList())
 # allWasserstein()
 

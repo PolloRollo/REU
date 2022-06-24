@@ -229,7 +229,7 @@ def subdigraphTest(file):
 def thesaurus(file='EATnew/EATgraph.txt', t=1):
     G = nx.read_weighted_edgelist(file, create_using=nx.DiGraph, nodetype=int)
     methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
-    print(file)
+    # print(file)
     # methods = ['directed_rnbrw', 'backtrack', 'directed_cycle']
     DRNBRW(G, t)
     backtrackDRW(G, t)
@@ -238,7 +238,19 @@ def thesaurus(file='EATnew/EATgraph.txt', t=1):
     weightedZCNBRW(G, t)
     directedCycle(G, t)
     for method in methods:
-        createGraphFiles.writeGraphWeights(G, folder='weightedDigraphs/thesaurusWeighted', file='EATgraph.txt', method=method, t=t)
+        createGraphFiles.writeGraphWeights(G, folder='weightedDigraphs/thesaurusWeighted', file='EATgraph', method=method, t=t)
+    with open("EATnew/EATcsv_" + str(t) + "m.csv", 'w') as csvfile:
+        fieldnames = ['in_comm', 'directed_rnbrw', 'backtrack', 'directed_cycle', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for head, tail in G.edges:
+            writer.writerow({'directed_rnbrw': G[head][tail]['directed_rnbrw'],
+                             'backtrack': G[head][tail]['backtrack'],
+                             'directed_cycle': G[head][tail]['directed_cycle'],
+                             'zigzag': G[head][tail]['zigzag'],
+                             'zigzag_cycle': G[head][tail]['zigzag_cycle'],
+                             'weighted_zigzag': G[head][tail]['weighted_zigzag']})
+
 
 """
 edges, weights = zip(*nx.get_edge_attributes(G, weight).items())
@@ -261,4 +273,4 @@ def subgraphTest(file):
 # digraphTest("10ln_500_3", t=1)
 # createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
 # createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
-thesaurus()
+thesaurus(t=1)
