@@ -127,24 +127,28 @@ def allWasserstein():
 
 def edgeStatistics(file):
     df = pd.read_csv(file)
-    methodDF = df.groupby(by='in_comm', as_index=False).agg({'directed_rnbrw': ['median', 'mean', 'std'],
-                                                             'backtrack': ['median', 'mean', 'std'],
-                                                             'zigzag': ['median', 'mean', 'std'],
-                                                             'zigzag_cycle': ['median', 'mean', 'std'],
-                                                             'weighted_zigzag': ['median', 'mean', 'std']})
-    methodDF['file'] = file.split(sep="/")[1]
     nameList = file.replace('_', ' ').replace('/', ' ').replace('.', ' ').split()
-    methodDF['nodes'] = int(nameList[2])
-    methodDF['edges'] = int(nameList[1][0])
-    methodDF['mixing'] = int(nameList[3][0])
-    methodDF['iter'] = int(nameList[4][:-1])
-    # print(methodDF.head())
-    return methodDF
+    methodDf = pd.DataFrame({'file': [file.split(sep="/")[1]],
+                             'nodes': [int(nameList[2])],
+                             'edges': [int(nameList[1][:-2])],
+                             'mixing': [int(nameList[3][0])],
+                             'iter': [int(nameList[-2][:-1])]})
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+    for method in methods:
+        methodDf[str('in_comm_' + method + '_mean')] = df[df['in_comm'] == True][method].mean()
+        methodDf[str('in_comm_' + method + '_std')] = df[df['in_comm'] == True][method].median()
+        methodDf[str('in_comm_' + method + '_median')] = df[df['in_comm'] == True][method].std()
+        methodDf[str('out_comm_' + method + '_mean')] = df[df['in_comm'] == False][method].mean()
+        methodDf[str('out_comm_' + method + '_std')] = df[df['in_comm'] == False][method].median()
+        methodDf[str('out_comm_' + method + '_median')] = df[df['in_comm'] == False][method].std()
+    return methodDf
 
 
 def createMetaAnalysis(directory="csvEdgesDirected"):
     metaDF = None
     for filename in os.listdir(directory):
+        if filename == '.DS_Store':
+            continue
         f = os.path.join(directory, filename)
         print(f)
         methodDF = edgeStatistics(f)
@@ -155,7 +159,21 @@ def createMetaAnalysis(directory="csvEdgesDirected"):
     metaDF.to_csv("metaEdges.csv")
 
 
-createMetaAnalysis()
+def performMetaAnalysis():
+    df = pd.read_csv("metaEdges.csv")
+    a = sns.scatterplot(data=df,
+                        x= df['edges'],
+                        y=df['in_comm_weighted_zigzag_mean'] - df['out_comm_weighted_zigzag_mean'],
+                        hue=df['mixing'])
+    a.set_title("Analysis of Weights for LFR Benchmarks")
+    a.set_xlabel("Edge count coeffiecient")
+    a.set_ylabel("Difference between mean in community vs \nacross community Weighted Zigzag")
+    a.legend(['.1', '.2', '.3', '.4', '.6', '.8'])
+    plt.show()
+
+
+# createMetaAnalysis()
+performMetaAnalysis()
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
 # createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
