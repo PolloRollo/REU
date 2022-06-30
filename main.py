@@ -225,7 +225,7 @@ def subdigraphTest(file):
     plt.show()
     # subgraphRNBRW(G)
 
-
+"""
 def thesaurus(file='EATnew/EATgraph.txt', t=1):
     G = nx.read_weighted_edgelist(file, create_using=nx.DiGraph, nodetype=int)
     methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
@@ -251,12 +251,43 @@ def thesaurus(file='EATnew/EATgraph.txt', t=1):
                              'zigzag_cycle': G[head][tail]['zigzag_cycle'],
                              'weighted_zigzag': G[head][tail]['weighted_zigzag']})
 
-
-"""
 edges, weights = zip(*nx.get_edge_attributes(G, weight).items())
 nx.draw(G, edgelist=edges, edge_color=weights)
 """
 
+
+def createRealGraphs(directory="realGraphs/Original", extra='', t=1):
+    for file in os.listdir(directory):
+        if file == '.DS_Store':
+            continue
+        file = directory + "/" + file
+        writeAllReal(file, t=t)
+
+
+def writeAllReal(file, folder="realGraphs/Weighted", t=1):
+    G = createGraphFiles.readDiReal(file)
+    # digraphLabeling(G)
+    methods = ['directed_rnbrw', 'backtrack', 'zigzag', 'zigzag_cycle', 'weighted_zigzag', 'directed_cycle']
+    file = file.split('/')[-1]
+    print(file)
+    # methods = ['directed_rnbrw', 'backtrack', 'directed_cycle']
+    DRNBRW(G, t)
+    backtrackDRW(G, t)
+    ZRNBRW(G, t)
+    ZCNBRW(G, t)
+    weightedZCNBRW(G, t)
+    directedCycle(G, t)
+    with open(folder + '/' + file.split('.')[0] + str(t) + "m.csv", 'w') as csvfile:
+        fieldnames = ['directed_rnbrw', 'backtrack', 'directed_cycle', 'zigzag', 'zigzag_cycle', 'weighted_zigzag']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for head, tail in G.edges:
+            writer.writerow({'directed_rnbrw': G[head][tail]['directed_rnbrw'],
+                             'backtrack': G[head][tail]['backtrack'],
+                             'directed_cycle': G[head][tail]['directed_cycle'],
+                             'zigzag': G[head][tail]['zigzag'],
+                             'zigzag_cycle': G[head][tail]['zigzag_cycle'],
+                             'weighted_zigzag': G[head][tail]['weighted_zigzag']})
 
 def subgraphTest(file):
     G = createGraphFiles.readAll(file)
@@ -264,6 +295,17 @@ def subgraphTest(file):
     plt.show()
 
 
+def reciprocityTest(directory="realGraphs/Original"):
+    for file in os.listdir(directory):
+        if file == '.DS_Store':
+            continue
+        file = directory + "/" + file
+        G = createGraphFiles.readDiReal(file)
+        print(file)
+        print(reciprocityIndex(G))
+
+
+reciprocityTest()
 # subdigraphTest("1ln_1000_1")
 # reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
@@ -273,4 +315,5 @@ def subgraphTest(file):
 # digraphTest("10ln_500_3", t=1)
 # createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
 # createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
-thesaurus(t=1)
+# createRealGraphs()
+

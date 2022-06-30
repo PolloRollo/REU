@@ -4,6 +4,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy import stats
 import os
+import numpy as np
 
 
 def compareAlgorithms(file):
@@ -100,9 +101,35 @@ def directedCompareWeights(file, x):
     plt.show()
 
 
-#compareAlgorithms("csvEdges/7_1000_3_100m.csv")
-# compareWeights("csvEdges/7_1000_3_100m.csv")
-# wassersteinDistance()
+def realDirectedCompareWeights(file, x):
+    df = pd.read_csv(file)
+    a = None
+    if file == "realGraphs/Weighted/EATgraph1m.csv" and x == 'zigzag_cycle':
+        a = sns.histplot(df, x=x, binwidth=2, binrange=[0, 100])
+        (n, bins, patches) = plt.hist(df[x], bins=100, range=(0, 100), label='hst')
+        print(n)
+    else:
+        a = sns.histplot(df, x=x, binwidth=1, binrange=[0, 30])
+        (n, bins, patches) = plt.hist(df[x], bins=30, range=(0, 30), label='hst')
+        print(n)
+        # print(plt.hist(x, bins=30, range=(0, 30), label='hst'))
+    a.set_title(str(x) + ' ' + str(file))
+    a.set_xlabel("Estimated Retracing Probability")
+    a.set_ylabel("Count")
+    # a.legend(["In Community Edge", "Across Community Edge"])
+    # a.set(title='Retracing Probability')
+    plt.show()
+
+
+def realCreateAllDirected(file):
+    realDirectedCompareWeights(file, "directed_rnbrw")
+    # realDirectedCompareWeights(file, "directed_cycle")
+    # realDirectedCompareWeights(file, 'backtrack')
+    realDirectedCompareWeights(file, "zigzag")
+    # realDirectedCompareWeights(file, "zigzag_cycle")
+    realDirectedCompareWeights(file, "weighted_zigzag")
+
+
 def createAllDirected(file):
     directedCompareAlgorithms(file)
     directedCompareWeights(file, "directed_rnbrw")
@@ -138,9 +165,13 @@ def edgeStatistics(file):
         methodDf[str('in_comm_' + method + '_mean')] = df[df['in_comm'] == True][method].mean()
         methodDf[str('in_comm_' + method + '_std')] = df[df['in_comm'] == True][method].median()
         methodDf[str('in_comm_' + method + '_median')] = df[df['in_comm'] == True][method].std()
+        methodDf[str('in_comm_' + method + '_max')] = df[df['in_comm'] == True][method].max()
+        methodDf[str('in_comm_' + method + '_min')] = df[df['in_comm'] == True][method].min()
         methodDf[str('out_comm_' + method + '_mean')] = df[df['in_comm'] == False][method].mean()
         methodDf[str('out_comm_' + method + '_std')] = df[df['in_comm'] == False][method].median()
         methodDf[str('out_comm_' + method + '_median')] = df[df['in_comm'] == False][method].std()
+        methodDf[str('out_comm_' + method + '_max')] = df[df['in_comm'] == False][method].max()
+        methodDf[str('out_comm_' + method + '_min')] = df[df['in_comm'] == False][method].min()
     return methodDf
 
 
@@ -161,27 +192,38 @@ def createMetaAnalysis(directory="csvEdgesDirected"):
 
 def performMetaAnalysis():
     df = pd.read_csv("metaEdges.csv")
-
+    sns.color_palette("husl", 8)
     a = sns.scatterplot(data=df,
-                        x=df['in_comm_directed_rnbrw_mean']/df['iter'],
-                        y=df['out_comm_directed_rnbrw_mean']/df['iter'],
-                        hue=df['nodes'],
-                        palette="flare")
-    a.set_title("Analysis of Mean Weights Colored by Node Count")
+                        x=df['in_comm_zigzag_mean']/df['iter'],
+                        y=df['out_comm_zigzag_mean']/df['iter'],
+                        hue= np.log(df['nodes']),
+                        palette='Spectral')
+    a.set_title("Analysis of Zigzag Mean Weights Colored by Node Count")
     a.set_xlabel("Mean In-Community Weight")
     a.set_ylabel("Mean Across-Community Weight")
     a.legend(['0', '500', '1000', '5000', '10000'])
     # a.legend(['0', '.1', '.2', '.3', '.4', '.6', '.8'])
-    # a.color_palette("hls", 8)
+
     plt.show()
 
 
-# createMetaAnalysis()
+def allRealGraphs(directory='realGraphs/Weighted'):
+    for filename in os.listdir(directory):
+        if filename == '.DS_Store':
+            continue
+        f = os.path.join(directory, filename)
+        print(f)
+        realCreateAllDirected(f)
+
+
 # performMetaAnalysis()
+allRealGraphs()
+# realCreateAllDirected("EATnew/EATcsv_1m.csv")
+# createMetaAnalysis()
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")
 # createAll("csvEdges/7_1000_3_10m.csv")
 # createAllDirected("csvEdgesDirected/1ln_1000_8_10m.csv")
-createAllDirected("EATnew/EATcsv_1m.csv")
+# createAllDirected("EATnew/EATcsv_1m.csv")
 # print(createFileList())
 # allWasserstein()
 

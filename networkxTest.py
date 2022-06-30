@@ -775,3 +775,22 @@ def visualize(G, truecom):
     plt.figure(15, figsize=(60,60))
     nx.draw(G, pos, node_size=200, arrowsize=10, node_color=color_map, cmap=plt.cm.hsv)
     plt.show()
+
+
+def reciprocityIndex(G):
+    N = len(G.nodes) * (len(G.nodes) - 1)
+    totalL, mutualL = countReciprocals(G)
+    return (mutualL * N - (totalL * totalL)) / (totalL * N - (totalL * totalL))
+
+
+def countReciprocals(G):
+    totalL = len(G.edges)
+    mutualL = 0
+    for tail, head in G.edges:
+        if tail in G[head]:
+            mutualL += 1
+    return totalL, mutualL
+
+
+
+

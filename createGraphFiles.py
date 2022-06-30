@@ -125,5 +125,18 @@ def writeGraphWeights(G, folder, file, method, extra='', t=1):
         f.write(s)
 
 
+def writeRealWeights(G, folder, file, method, t=1):
+    string = folder + "/" + method + "/" + file.split("/")[-1]
+    f = open(string, "w")
+    for tail, head in G.edges:
+        # print(G[tail][head][method])
+        s = ' '.join([str(tail), str(head), str(G[tail][head][method]), "\n"])
+        f.write(s)
+
+
+def readDiReal(file):
+    if str(file[-4:]) != ".txt":
+        file += ".txt"
+    return nx.read_weighted_edgelist(file, create_using=nx.DiGraph, nodetype=int)
 
 
