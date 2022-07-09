@@ -216,8 +216,38 @@ def allRealGraphs(directory='realGraphs/Weighted'):
         realCreateAllDirected(f)
 
 
+def createFinalAnalysis(directory="realGraphs/CSV"):
+    finalDF = None
+    for filename in os.listdir(directory):
+        if filename == '.DS_Store':
+            continue
+        f = os.path.join(directory, filename)
+        print(f)
+        methodDF = pd.read_csv(f)
+        if finalDF is None:
+            finalDF = methodDF
+        else:
+            finalDF = pd.concat([finalDF, methodDF])
+    finalDF.to_csv("final.csv")
+
+
+def finalGraph():
+    df = pd.read_csv("final.csv")
+    # sns.color_palette("husl", 8)
+    a = sns.lineplot(data=df, x=df['initial'], y=df['commAve'],
+                        hue=df['network'])
+    a.set_title("Community partition by Initial Edge Weight")
+    a.set_xlabel("Initial Edge Weight")
+    a.set_ylabel("Average Reciprocity")
+    # a.legend(['0', '500', '1000', '5000', '10000'])
+    # a.legend(['0', '.1', '.2', '.3', '.4', '.6', '.8'])
+    plt.show()
+
+
+finalGraph()
+# createFinalAnalysis()
 # performMetaAnalysis()
-allRealGraphs()
+# allRealGraphs()
 # realCreateAllDirected("EATnew/EATcsv_1m.csv")
 # createMetaAnalysis()
 # compareAlgorithms("csvEdges/7_1000_3_100m.csv")

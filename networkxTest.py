@@ -6,7 +6,7 @@ David Rollo's code for testing NetworkX
 
 import networkx as nx
 import random
-from math import floor
+from math import floor, log2
 import matplotlib.pyplot as plt
 from sklearn.metrics import normalized_mutual_info_score, adjusted_mutual_info_score
 import numpy as np
@@ -780,6 +780,8 @@ def visualize(G, truecom):
 def reciprocityIndex(G):
     N = len(G.nodes) * (len(G.nodes) - 1)
     totalL, mutualL = countReciprocals(G)
+    if N == totalL:
+        return 1
     return (mutualL * N - (totalL * totalL)) / (totalL * N - (totalL * totalL))
 
 
@@ -790,6 +792,130 @@ def countReciprocals(G):
         if tail in G[head]:
             mutualL += 1
     return totalL, mutualL
+
+
+"""
+def countReciprocalsWeighted(G):
+    totalL = 0
+    mutualL = 0
+    for tail, head, weight in G.edges:
+        totalL += weight
+        if tail in G[head]:
+            mutualL += weight
+    return totalL, mutualL
+
+
+def reciprocalRatioWeighted(G):
+    totalL = 0
+    mutualL = 0
+    for tail, head, weight in G.edges:
+        totalL += weight
+        if tail in G[head]:
+            mutualL += weight
+    return mutualL / totalL
+"""
+
+
+def reciprocalRatio(G):
+    totalL = len(G.edges)
+    mutualL = 0
+    for tail, head in G.edges:
+        if tail in G[head]:
+            mutualL += 1
+    return mutualL / totalL
+
+
+def communityReciprocalRatio(G, communities, weighted=False):
+    # I'm going to assume the communities are iterable
+    reciprocityIndexList = []
+    total = 0
+    for comm in communities:
+        # comm should be a collection of node names
+        if len(comm) <= 1:
+            # How do we want to deal with singletons or pairs?
+            # It is probably dishonest to rate a singleton as having 100% reciprocity
+            # At the same time, 0% is unfair
+            # Pairs of two can't backtrack
+            # For now these cases will not be counted
+            continue
+        H = G.subgraph(comm)
+        if weighted:
+            reciprocityIndexList.append(reciprocalRatio(H) * len(comm))
+            total += len(comm)
+        else:
+            reciprocityIndexList.append(reciprocalRatio(H))
+            total += 1
+    return sum(reciprocityIndexList)/total
+
+
+def communityReciprocity(G, communities, weighted=False):
+    # I'm going to assume the communities are iterable
+    reciprocityIndexList = []
+    total = 0
+    for comm in communities:
+        if len(comm) <= 1:
+            # How do we want to deal with singletons or pairs?
+            # It is probably dishonest to rate a singleton as having 100% reciprocity
+            # At the same time, 0% is unfair
+            # Pairs of two can't backtrack
+            # For now these cases will not be counted
+            continue
+        H = G.subgraph(comm)
+        if weighted:
+            reciprocityIndexList.append(reciprocityIndex(H) * len(comm))
+            total += len(comm)
+        else:
+            reciprocityIndexList.append(reciprocityIndex(H))
+            total += 1
+    return sum(reciprocityIndexList)/total
+
+
+def finalTest(G, communities, initialWeight, latex=True):
+    """
+    Coordinate between the graph and the communities
+    - initialWeight
+    - |S|
+    - |C|
+    - max(C)
+    - r
+    - rho
+    """
+    singleCount = 0
+    maxSize = 0
+    total = 0
+    count = 1
+    initialWeight = float(initialWeight[:1] + '.' + initialWeight[1:])
+    for comm in communities:
+        total += len(comm)
+        count += 1
+        if len(comm) == 1:
+            singleCount += 1
+        if len(comm) > maxSize:
+            maxSize = len(comm)
+    aveComm = round(total / count, 3)
+    r = str(round(communityReciprocalRatio(G, communities, weighted=True), 3))
+    rho = str(round(communityReciprocity(G, communities, weighted=True), 3))
+    # What is the weight?
+    data = [initialWeight, str(singleCount), str(len(communities)-singleCount), str(maxSize), str(aveComm), r, rho]
+    if latex:
+        return ' & '.join(data)
+    return data
+
+
+def communityCounter(communities):
+    counter = {}
+    for comm in communities:
+        val = floor(log2(len(comm)))
+        if val in counter:
+            counter[val] += 1
+        else:
+            counter[val] = 1
+    return counter
+
+
+
+
+
 
 
 

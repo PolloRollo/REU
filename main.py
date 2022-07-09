@@ -289,6 +289,7 @@ def writeAllReal(file, folder="realGraphs/Weighted", t=1):
                              'zigzag_cycle': G[head][tail]['zigzag_cycle'],
                              'weighted_zigzag': G[head][tail]['weighted_zigzag']})
 
+
 def subgraphTest(file):
     G = createGraphFiles.readAll(file)
     nx.draw(G)
@@ -302,10 +303,90 @@ def reciprocityTest(directory="realGraphs/Original"):
         file = directory + "/" + file
         G = createGraphFiles.readDiReal(file)
         print(file)
-        print(reciprocityIndex(G))
+        print("N:", len(G.nodes))
+        print("E:", len(G.edges))
+        print("r:", reciprocalRatio(G))
+        print("rho:", reciprocityIndex(G))
 
 
-reciprocityTest()
+def final(graphDirectory="realGraphs/Original", commDirectory="realGraphs/finalCommunities"):
+    dict = {'moreno_highschool.txt': 'highschool',
+            'moreno_health.txt': 'health',
+            'moreno_oz.txt': 'college'}
+    for file in os.listdir(graphDirectory):
+        if file == '.DS_Store':
+            continue
+        if file in dict:
+            print(file)
+            graphPath = graphDirectory + '/' + file
+            commPath = commDirectory + '/' + dict[file]
+            G = createGraphFiles.readDiReal(graphPath)
+            for commFile in os.listdir(commPath):
+                if commFile == '.DS_Store':
+                    continue
+                commPathFile = commPath + '/' + commFile
+                communities = createGraphFiles.readDiCommunities(commPathFile)
+                fileList = commFile.split('_')
+                string = ''
+                types = ''
+                if len(fileList) == 2:
+                    # Only Louvain
+                    string = '---'
+                    types = '---'
+                else:
+                    string = fileList[-2][4:]
+                    if len(fileList) == 5:
+                        types = 'r'
+                        continue
+                    elif len(fileList) == 6:
+                        types = 'c'
+                print(finalTest(G, communities, string) + '\\\\')
+                # print(string, communityCounter(communities))
+
+
+def finalCSV(graphDirectory="realGraphs/Original", commDirectory="realGraphs/finalCommInc", folder='realGraphs/CSV'):
+    dict = {'moreno_highschool.txt': 'highschool',
+            'moreno_health.txt': 'health',
+            'moreno_oz.txt': 'college'}
+    for file in os.listdir(graphDirectory):
+        if file == '.DS_Store':
+            continue
+        if file in dict:
+            print(file)
+            with open(folder + '/' + file + ".csv", 'w') as csvfile:
+                fieldnames = ['network', 'initial', 'singleton', 'commTotal', 'commMax', 'commAve', 'r', 'rho']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                graphPath = graphDirectory + '/' + file
+                commPath = commDirectory + '/' + dict[file]
+                G = createGraphFiles.readDiReal(graphPath)
+                for commFile in os.listdir(commPath):
+                    if commFile == '.DS_Store':
+                        continue
+                    commPathFile = commPath + '/' + commFile
+                    communities = createGraphFiles.readDiCommunities(commPathFile)
+                    fileList = commFile.split('_')
+                    string = ''
+                    if len(fileList) == 2:
+                        # Only Louvain
+                        string = '---'
+                        continue
+                    else:
+                        string = fileList[-2][4:]
+                    data = finalTest(G, communities, string, latex=False)
+                    writer.writerow({'network': dict[file],
+                                     'initial': data[0],
+                                     'singleton': data[1],
+                                     'commTotal': data[2],
+                                     'commMax': data[3],
+                                     'commAve': data[4],
+                                     'r': data[5],
+                                     'rho': data[6]})
+
+
+
+final()
+# reciprocityTest()
 # subdigraphTest("1ln_1000_1")
 # reciprocalEdge("1ln_10000_3")
 # mainRetraceStudy(1000)
@@ -315,5 +396,5 @@ reciprocityTest()
 # digraphTest("10ln_500_3", t=1)
 # createAllEdgeCSVs("digraphs/small_tau/networks/", extra='small_tau', t=1)
 # createAllWeightFiles(directory="digraphs/larger_community_range/networks/", extra='larger_community_range', t=10)
-# createRealGraphs()
+# createRealGraphs(t=10)
 
